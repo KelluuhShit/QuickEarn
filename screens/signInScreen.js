@@ -1,10 +1,11 @@
-// screens/SignInScreen.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import googleLogo from '../assets/welcomeImg/gLogo.png'
 
 const SignInScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // State for loading
 
   // Mock sign-in function
   const handleSignIn = () => {
@@ -16,21 +17,26 @@ const SignInScreen = ({ navigation }) => {
     // Mock validation
     if (email === 'test@example.com' && password === 'password123') {
       // On successful sign-in
-      navigation.navigate('Home'); // Navigate to the Home screen or main tab navigator
+      navigation.navigate('Home');
     } else {
       Alert.alert('Error', 'Invalid email or password.');
     }
   };
 
-  // Mock Google sign-in function
+  // Mock Google sign-in function with loader and error
   const handleGoogleSignIn = () => {
-    // Add Google sign-in logic here
-    Alert.alert('Google Sign-In', 'Google sign-in functionality is not implemented yet.');
+    setIsLoading(true);
+    
+    // Simulate a delay (e.g., for actual Google sign-in)
+    setTimeout(() => {
+      setIsLoading(false);
+      Alert.alert('Error', 'Google sign-in failed. Please try again later.');
+    }, 5000); // 5-second delay
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Sign In</Text>
+      <Text style={styles.header}>Sign In to Your Account</Text>
 
       <TextInput
         style={styles.input}
@@ -57,13 +63,23 @@ const SignInScreen = ({ navigation }) => {
 
       <Text style={styles.orText}>OR</Text>
 
-      <TouchableOpacity style={styles.googleButton} onPress={handleGoogleSignIn}>
-        <Image
-          source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png' }}
-          style={styles.googleLogo}
-        />
-        <Text style={styles.googleButtonText}>Sign in with Google</Text>
-      </TouchableOpacity>
+      <TouchableOpacity 
+    style={styles.googleButton} 
+    onPress={handleGoogleSignIn} 
+    disabled={isLoading} // Disable button while loading
+  >
+    {isLoading ? (
+      <ActivityIndicator size="large" color="#4D869C" />
+    ) : (
+      <Image
+        source={googleLogo}
+        style={styles.googleLogo}
+      />
+    )}
+    <Text style={styles.googleButtonText}>Sign in with Google</Text>
+  </TouchableOpacity>
+
+      
 
       <TouchableOpacity style={styles.signUpLink} onPress={() => navigation.navigate('SignUp')}>
         <Text style={styles.signUpText}>Don’t have an account? Sign Up</Text>
@@ -81,10 +97,11 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   header: {
-    fontSize: 28,
+    fontSize: 25,
     fontWeight: 'bold',
     color: '#7AB2B2',
     marginBottom: 40,
+    fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
   },
   input: {
     width: '100%',
@@ -103,16 +120,19 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     marginBottom: 20,
+    fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
   },
   buttonText: {
     color: '#EEF7FF',
     fontSize: 16,
     fontWeight: 'bold',
+    fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
   },
   orText: {
     fontSize: 16,
     color: '#7AB2B2',
     marginBottom: 20,
+    fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
   },
   googleButton: {
     flexDirection: 'row',
@@ -128,14 +148,15 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   googleLogo: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
+    width: 25,
+    height: 25,
+    marginRight: 5,
   },
   googleButtonText: {
     color: '#4D869C',
     fontSize: 16,
     fontWeight: 'bold',
+    fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
   },
   signUpLink: {
     marginTop: 30,
@@ -144,6 +165,7 @@ const styles = StyleSheet.create({
     color: '#4D869C',
     fontSize: 14,
     fontWeight: '600',
+    fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
   },
 });
 
