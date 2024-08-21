@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert, ActivityIndicator } from 'react-native';
-import googleLogo from '../assets/welcomeImg/gLogo.png'
+import googleLogo from '../assets/welcomeImg/gLogo.png';
+import signInImg from '../assets/logInImg/login.png'
 
 const SignInScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -36,6 +37,10 @@ const SignInScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Image
+        source={signInImg}
+        style={styles.signInImg}
+      />
       <Text style={styles.header}>Sign In to Your Account</Text>
 
       <TextInput
@@ -151,6 +156,10 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25,
     marginRight: 5,
+  },
+  signInImg:{
+    width: 200,
+    height: 200,
   },
   googleButtonText: {
     color: '#4D869C',

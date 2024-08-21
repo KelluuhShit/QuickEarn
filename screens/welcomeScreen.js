@@ -44,7 +44,7 @@ const WelcomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>QuickEarn Tasks </Text>
+      <Text style={styles.header}>QuickEarn Tasks App</Text>
 
       <Text style={styles.imageDescription}>
         {imageDescriptions[currentImageIndex]} {/* Display description */}
@@ -68,7 +68,7 @@ const WelcomeScreen = ({ navigation }) => {
         style={styles.button}
         onPress={() => navigation.navigate('SignIn')}
       >
-        <Text style={styles.buttonText}>Create Account</Text>
+        <Text style={styles.buttonText}>Get Started</Text>
       </TouchableOpacity>
     </View>
   );

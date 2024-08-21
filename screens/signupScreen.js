@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+import createImg from '../assets/logInImg/create.png'
 
 const SignUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -29,6 +30,10 @@ const SignUpScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Image
+        source={createImg}
+        style={styles.createImg}
+      />
       <Text style={styles.header}>Create Account</Text>
 
       <TextInput
@@ -127,6 +132,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
   },
+  createImg:{
+    width: 200,
+    height: 200,
+  }
 });
 
 export default SignUpScreen;
