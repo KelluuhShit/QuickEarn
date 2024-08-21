@@ -158,8 +158,8 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   signInImg:{
-    width: 200,
-    height: 200,
+    width: 150,
+    height: 150,
   },
   googleButtonText: {
     color: '#4D869C',

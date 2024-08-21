@@ -1,16 +1,18 @@
+// screens/SignUpScreen.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import { useAuth } from '../context/AuthContext';
-import createImg from '../assets/logInImg/create.png'
+import createImg from '../assets/logInImg/create.png';
 
 const SignUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const { setIsAuthenticated } = useAuth();
+  const [username, setUsername] = useState(''); // Add username state
+  const { setIsAuthenticated, setUsername: setGlobalUsername } = useAuth(); // Update to include setUsername
 
   const handleSignUp = () => {
-    if (email === '' || password === '' || confirmPassword === '') {
+    if (email === '' || password === '' || confirmPassword === '' || username === '') {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
@@ -23,6 +25,7 @@ const SignUpScreen = ({ navigation }) => {
     // Mock sign-up process
     if (email === 'test@example.com' && password.length >= 6) {
       setIsAuthenticated(true); // Set authenticated state to true
+      setGlobalUsername(username); // Set the global username
     } else {
       Alert.alert('Error', 'Sign-up failed. Please try again.');
     }
@@ -35,6 +38,14 @@ const SignUpScreen = ({ navigation }) => {
         style={styles.createImg}
       />
       <Text style={styles.header}>Create Account</Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Username"
+        placeholderTextColor="#7AB2B2"
+        value={username}
+        onChangeText={setUsername}
+      />
 
       <TextInput
         style={styles.input}
@@ -90,7 +101,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#7AB2B2',
     marginBottom: 40,
-    fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
+    fontFamily: 'Rubik-Regular',
   },
   input: {
     width: '100%',
@@ -114,25 +125,24 @@ const styles = StyleSheet.create({
     color: '#EEF7FF',
     fontSize: 16,
     fontWeight: 'bold',
-    fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
+    fontFamily: 'Rubik-Regular',
   },
   orText: {
     fontSize: 16,
     color: '#7AB2B2',
     marginBottom: 20,
-    fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
+    fontFamily: 'Rubik-Regular',
   },
   signInLink: {
     marginTop: 30,
-    
   },
   signInText: {
     color: '#4D869C',
     fontSize: 14,
     fontWeight: '600',
-    fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
+    fontFamily: 'Rubik-Regular',
   },
-  createImg:{
+  createImg: {
     width: 200,
     height: 200,
   }
