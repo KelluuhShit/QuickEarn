@@ -1,15 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, Alert, Image, ScrollView } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, Alert, Image, ScrollView, FlatList  } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import bonusImg from '../assets/homeImg/bonus.png';
 import defaultPhoto from '../assets/homeImg/defaultUserPhoto.png';
+
 
 const HomeScreen = () => {
   const { username } = useAuth();
   const [modalVisible, setModalVisible] = useState(false);
   const [greeting, setGreeting] = useState('');
   const [selectedTopic, setSelectedTopic] = useState(null);
+  const [surveyModalVisible, setSurveyModalVisible] = useState(false);
+  
+  const flatListRef = useRef(null);
+
+  const handleTopicPress = (item, index) => {
+    setSelectedTopic(item);
+    if (flatListRef.current) {
+      flatListRef.current.scrollToIndex({ index, animated: true, viewPosition: 0.5 });
+    }
+  };
 
   useEffect(() => {
     if (username) {
@@ -44,9 +55,22 @@ const HomeScreen = () => {
     // Handle notifications icon press (e.g., navigate to notifications screen)
   };
 
+  const handleBalancePress = () => {
+
+  };
+
   const handleChangePhoto = () => {
     // Handle changing user photo logic
   };
+
+  const handleSurveyPress = () => {
+    setSurveyModalVisible(true);
+  };
+
+  const closeSurveyModal = () => {
+    setSurveyModalVisible(false);
+  }
+
 
   const surveyTopics = [
     { topic: 'Recent Work Experience', surveys: ['Survey 1', 'Survey 2', 'Survey 3'] },
@@ -61,48 +85,73 @@ const HomeScreen = () => {
     { topic: 'Entertainment Choices', surveys: ['Survey 28', 'Survey 29', 'Survey 30'] },
   ];
 
-  const handleTopicPress = (topic) => {
-    setSelectedTopic(topic);
-  };
+  // const handleTopicPress = (topic) => {
+  //   setSelectedTopic(topic);
+  // };
 
   return (
     <View style={styles.container}>
       {/* Top Icons */}
-      <View style={styles.topIconsContainer}>
-        <TouchableOpacity onPress={handleProfilePress}>
-          <Ionicons name="person-circle-outline" size={32} color="#4D869C" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleNotificationsPress}>
-          <Ionicons name="notifications-outline" size={32} color="#4D869C" />
-        </TouchableOpacity>
+      <View style={styles.userProfile}>
+          <View style={styles.topIconsContainer}>
+              <TouchableOpacity onPress={handleProfilePress}>
+                <Ionicons name="person-circle-outline" size={32} color="#EEF7FF" />
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={handleNotificationsPress}>
+                <Ionicons name="notifications-outline" size={32} color="#EEF7FF" />
+              </TouchableOpacity>
+          </View>
+
+          {/* Greeting and Photo Container */}
+          <View style={styles.greetingContainer}>
+            <Text style={styles.greetingText}>
+              {greeting} {'\n'}
+              <Text style={styles.usernameText}>{username}</Text>!
+            </Text>
+            <TouchableOpacity onPress={handleChangePhoto}>
+              <Image
+                source={defaultPhoto} // Replace with user's photo or default
+                style={styles.userPhoto}
+              />
+            </TouchableOpacity>
+          </View>
       </View>
 
-      {/* Greeting and Photo Container */}
-      <View style={styles.greetingContainer}>
-        <Text style={styles.greetingText}>
-          {greeting} {'\n'}
-          <Text style={styles.usernameText}>{username}</Text>!
-        </Text>
-        <TouchableOpacity onPress={handleChangePhoto}>
-          <Image
-            source={defaultPhoto} // Replace with user's photo or default
-            style={styles.userPhoto}
-          />
+      <View style={styles.categorySec}>
+      <Text style={styles.balText}>survey categories</Text>
+      <Text style={styles.balText}>|</Text>
+        <TouchableOpacity onPress={handleSurveyPress} style={styles.seeAll}>
+          <Text style={styles.seeAlltext}>see all</Text>
         </TouchableOpacity>
       </View>
 
       {/* Scrollable Survey Topics */}
-      <ScrollView horizontal={true} style={styles.scrollContainer} showsHorizontalScrollIndicator={false}>
-        {surveyTopics.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.surveyButton}
-            onPress={() => handleTopicPress(item)}
-          >
-            <Text style={styles.surveyButtonText}>{item.topic}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+          <FlatList 
+                    ref={flatListRef}
+                    horizontal
+                    data={surveyTopics}
+                    renderItem={({ item, index }) => (
+                      <TouchableOpacity
+                        style={styles.surveyButton}
+                        onPress={() => handleTopicPress(item, index)}
+                      >
+                        <View style={styles.buttonContent}>
+                          {selectedTopic?.topic === item.topic && (
+                            <Ionicons name="checkmark-circle-outline" size={15} color="#EEF7FF" style={styles.icon} />
+                          )}
+                          <Text style={styles.surveyButtonText}>{item.topic}</Text>
+                        </View>
+                      </TouchableOpacity>
+                    )}
+                    keyExtractor={(item) => item.topic}
+                    showsHorizontalScrollIndicator={false}
+                    style={styles.scrollContainer}
+          />
+
+          <Text style={styles.availableTittle}>Available Tasks for You:</Text>
+
+
 
       {/* Display Selected Surveys in a Specific Container */}
             {selectedTopic && (
@@ -136,6 +185,45 @@ const HomeScreen = () => {
           </View>
         </View>
       </Modal>
+
+      {/* Modal for Survey Topics */}
+      <Modal
+        transparent={true}
+        animationType="slide"
+        visible={surveyModalVisible}
+        onRequestClose={closeSurveyModal}
+      >
+            <View style={styles.surveyModalContainer}>
+                <View style={styles.surveyModalContent}>
+                  <Text style={styles.surveyModalTitle}>All Survey Categories</Text>
+
+                  <Text style={styles.surveyExplain}>
+                  Pick your favorite survey topic below to view related tasks and start earning rewards.{'\n'}
+                  Good luck and enjoy the rewards!
+                  </Text>
+                  
+                  <View style={styles.surveyButtonGrid}>
+                      {surveyTopics.map((item, index) => (
+                        <TouchableOpacity
+                          key={index}
+                          style={styles.surveyModalButton}
+                          onPress={() => {
+                            handleTopicPress(item, index); // Pass index here
+                            closeSurveyModal();
+                          }}
+                        >
+                          <Text style={styles.surveyModalButtonText}>{item.topic}</Text>
+                        </TouchableOpacity>
+                      ))}
+                  </View>
+                  
+                  <TouchableOpacity style={styles.closeButton} onPress={closeSurveyModal}>
+                    <Text style={styles.closeButtonText}>Close</Text>
+                  </TouchableOpacity>
+                </View>
+            </View>
+      </Modal>
+
     </View>
   );
 };
@@ -144,33 +232,40 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#CDE8E5',
-    paddingHorizontal: 20,
-    paddingTop: 40,
+    // paddingHorizontal: 10,
+    // paddingTop: 40,
   },
   topIconsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    alignItems:'center',
+    margin: 20,
   },
   greetingContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#EEF7FF',
     padding: 20,
     borderRadius: 10,
     marginBottom: 20,
   },
+  userProfile:{
+    backgroundColor: '#4D869C',
+    borderBottomEndRadius:20,
+    borderBottomStartRadius:20,
+    elevation: 3,
+    
+  },
   greetingText: {
     fontSize: 20,
-    color: '#4D869C',
+    color: '#EEF7FF',
     fontFamily: 'Rubik-Regular',
     fontWeight: '200',
   },
   usernameText: {
-    fontSize: 27,
+    fontSize: 25,
     fontWeight: 'bold',
-    color: '#4D869C',
+    color: '#EEF7FF',
     fontFamily: 'Rubik-Bold',
   },
   userPhoto: {
@@ -178,26 +273,35 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 30,
     borderWidth: 2,
-    borderColor: '#4D869C',
+    borderColor: '#EEF7FF',
   },
   scrollContainer: {
-    marginTop: 10,
-    marginBottom: 20,
+    margin:10,
   },
   surveyButton: {
-    backgroundColor: '#4D869C',
-    borderRadius: 25,
-    paddingVertical: 5,
-    paddingHorizontal: 20,
-    marginRight: 10,
-    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'row',
+    backgroundColor: '#4D869C',
+    borderRadius: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 20,
+    marginRight: 5,
+    height: 35,
+  },
+  icon:{
+    marginRight: 5,
   },
   surveyButtonText: {
     color: '#EEF7FF',
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: 'Rubik-Regular',
+    justifyContent:'center',
+    alignItems:'center',
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   selectedTopicContainer: {
     flex: 1,
@@ -207,7 +311,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   selectedTopicContainer: {
-    marginTop: 20,
+    // marginTop: 20,
   },
   surveyContainer: {
     backgroundColor: '#FFF',
@@ -218,6 +322,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
+    margin:10
   },
   surveyTitleText: {
     fontSize: 18,
@@ -270,6 +375,97 @@ const styles = StyleSheet.create({
     height: 200,
     marginBottom: 20,
   },
+  categorySec:{
+  flexDirection:'row',
+  
+  },
+  balText:{
+    fontSize: 15,
+    color: '#4D869C',
+    fontFamily: 'Rubik-Regular',
+    marginLeft:10,
+    marginTop:10
+  },
+  seeAlltext:{
+    fontSize: 15,
+    color: '#7AB2B2',
+    fontFamily: 'Rubik-Regular',
+    marginLeft:10,
+    marginTop:10,
+    justifyContent:'center',
+    alignItems:'center',
+    borderBottomWidth:2,
+    borderBottomColor:'#7AB2B2'
+  },
+  seeAll:{
+    
+  },
+  surveyModalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  surveyModalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    flex: 1,
+    width: '100%',
+    justifyContent:'center'
+  },
+  surveyButtonGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  surveyModalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#4D869C',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  surveyModalButton: {
+    backgroundColor: '#4D869C',
+    borderRadius: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 20,
+    marginRight: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height:35,
+    marginTop:10,
+  },
+  surveyModalButtonText: {
+    color: '#EEF7FF',
+    fontSize: 15,
+    fontFamily: 'Rubik-Regular',
+  },
+  closeButton: {
+    marginTop: 50,
+    padding: 10,
+    borderRadius: 50,
+    alignItems: 'center',
+    borderWidth:2,
+    borderColor:'#4D869C',
+
+  },
+  closeButtonText: {
+    color: '#4D869C',
+    fontSize: 18,
+  },
+  surveyExplain:{
+    color: '#4D869C',
+    fontSize: 15,
+    marginBottom:10
+  },
+  availableTittle:{
+    fontSize: 18,
+    color: '#4D869C',
+    marginLeft:10,
+  }
+  
 });
 
 export default HomeScreen;

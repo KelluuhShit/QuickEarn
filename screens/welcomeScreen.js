@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, Animated } from 'react
 import imgOne from '../assets/welcomeImg/imgOne.png';
 import imgTwo from '../assets/welcomeImg/imgTwo.png';
 import imgEnd from '../assets/welcomeImg/imgEnd.png';
+import { Ionicons } from '@expo/vector-icons';
 
 const images = [imgOne, imgTwo, imgEnd]; // Array of images
 const imageDescriptions = [
@@ -13,34 +14,33 @@ const imageDescriptions = [
 
 const WelcomeScreen = ({ navigation }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const progressAnim = useRef(new Animated.Value(0)).current; // Create animated value
+  const fadeAnim = useRef(new Animated.Value(1)).current; // Initial opacity: 1
 
   useEffect(() => {
     const intervalTime = 4000; // Time each image is displayed
 
-    const startAnimation = () => {
-      progressAnim.setValue(0); // Reset animation value
-      Animated.timing(progressAnim, {
-        toValue: 1, // Animate to 100% width
-        duration: intervalTime,
-        useNativeDriver: false, // Required for width animation
-      }).start();
-    };
-
-    startAnimation();
     const intervalId = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-      startAnimation();
+      Animated.sequence([
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 500, // Fade out duration
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 500, // Fade in duration
+          useNativeDriver: true,
+        })
+      ]).start();
+
+      setTimeout(() => {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+      }, 500); // Change image after fade out
+
     }, intervalTime);
 
     return () => clearInterval(intervalId); // Clean up on unmount
   }, [currentImageIndex]);
-
-  // Interpolate the animated value for progress width
-  const progressWidth = progressAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0%', '100%'],
-  });
 
   return (
     <View style={styles.container}>
@@ -50,18 +50,22 @@ const WelcomeScreen = ({ navigation }) => {
         {imageDescriptions[currentImageIndex]} {/* Display description */}
       </Text>
 
-      <Image
+      <Animated.Image
         source={images[currentImageIndex]} // Use the current image
-        style={styles.image}
+        style={[styles.image, { opacity: fadeAnim }]} // Apply animation
       />
 
-      <View style={styles.progressContainer}>
-        <Animated.View
-          style={[
-            styles.progressBar,
-            { width: progressWidth } // Animated width
-          ]}
-        />
+      {/* Radio Buttons */}
+      <View style={styles.radioButtonContainer}>
+        {images.map((_, index) => (
+          <Ionicons
+            key={index}
+            name={currentImageIndex === index ? "radio-button-on" : "radio-button-off"}
+            size={22}
+            color={currentImageIndex === index ? "#4D869C" : "#4D869C"}
+            style={styles.radioButton}
+          />
+        ))}
       </View>
 
       <TouchableOpacity
@@ -102,17 +106,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
   },
-  progressContainer: {
-    width: '100%',
-    height: 10,
-    backgroundColor: '#CDE8E5',
-    borderRadius: 10,
-    marginVertical: 20,
-    overflow: 'hidden', // Ensures progress bar doesn't overflow container
+  radioButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 20,
   },
-  progressBar: {
-    height: '100%',
-    backgroundColor: '#4D869C',
+  radioButton: {
+    marginHorizontal: 10, // Adjust spacing between radio buttons
   },
   button: {
     backgroundColor: '#4D869C',
