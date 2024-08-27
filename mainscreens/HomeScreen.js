@@ -5,6 +5,12 @@ import { Ionicons } from '@expo/vector-icons';
 import bonusImg from '../assets/homeImg/bonus.png';
 import defaultPhoto from '../assets/homeImg/defaultUserPhoto.png';
 
+import * as Notifications from 'expo-notifications';
+import { Platform } from 'react-native';
+import Constants from 'expo-constants';
+
+
+
 
 const HomeScreen = () => {
   const { username } = useAuth();
@@ -12,6 +18,7 @@ const HomeScreen = () => {
   const [greeting, setGreeting] = useState('');
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [surveyModalVisible, setSurveyModalVisible] = useState(false);
+  
   
   const flatListRef = useRef(null);
 
@@ -28,11 +35,6 @@ const HomeScreen = () => {
     }
   }, [username]);
 
-  const handleClaimBonus = () => {
-    Alert.alert('Bonus Claimed', 'You have claimed your bonus.');
-    setModalVisible(false);
-  };
-
   useEffect(() => {
     const getGreeting = () => {
       const currentHour = new Date().getHours();
@@ -46,6 +48,90 @@ const HomeScreen = () => {
     };
     setGreeting(getGreeting());
   }, []);
+
+  useEffect(() => {
+
+
+    if (!selectedTopic && surveyTopics.length > 0) {
+      setSelectedTopic(surveyTopics[0]);
+    }
+  }, [surveyTopics, selectedTopic]);
+
+
+  useEffect(() => {
+    registerForPushNotificationsAsync();
+  }, []);
+
+  async function registerForPushNotificationsAsync() {
+    let token;
+  
+    if (Constants.isDevice) {
+      try {
+        // Check current permission status
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+  
+        // Request permission if not already granted
+        if (existingStatus !== 'granted') {
+          const { status } = await Notifications.requestPermissionsAsync();
+          finalStatus = status;
+        }
+  
+        // Handle case where permission is not granted
+        if (finalStatus !== 'granted') {
+          alert('Failed to get push token for push notification! Permissions not granted.');
+          return;
+        }
+  
+        // Retrieve push token
+        token = (await Notifications.getExpoPushTokenAsync()).data;
+        console.log('Push Token:', token);
+  
+        // Optionally, store the token securely if needed
+  
+      } catch (error) {
+        console.error('Error registering for push notifications:', error);
+      }
+  
+      // Configure notification channel for Android
+      if (Platform.OS === 'android') {
+        await Notifications.setNotificationChannelAsync('default', {
+          name: 'default',
+          importance: Notifications.AndroidImportance.MAX,
+          vibrationPattern: [0, 250, 250, 250],
+          lightColor: '#FF231F7C',
+        });
+      }
+    } else {
+      // alert('Must use a physical device for Push Notifications');
+    }
+  
+    return token;
+  }
+  
+  
+
+  async function testNotification() {
+    try {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Test Notification",
+          body: "This is a test notification",
+        },
+        trigger: { seconds: 1 },
+      });
+    } catch (error) {
+      console.log("Error scheduling notification:", error);
+    }
+  }
+  
+  const handleClaimBonus = async () => {
+    // Alert.alert('Bonus Claimed', 'You have claimed your bonus.');
+    setModalVisible(false);
+    await testNotification();
+  };
+  
+
 
   const handleProfilePress = () => {
     // Handle profile icon press (e.g., navigate to profile screen)
@@ -72,22 +158,167 @@ const HomeScreen = () => {
   }
 
 
-  const surveyTopics = [
-    { topic: 'Recent Work Experience', surveys: ['Survey 1', 'Survey 2', 'Survey 3'] },
-    { topic: 'Daily Habits', surveys: ['Survey 4', 'Survey 5', 'Survey 6'] },
-    { topic: 'Fitness Activities', surveys: ['Survey 7', 'Survey 8', 'Survey 9'] },
-    { topic: 'Social Media Usage', surveys: ['Survey 10', 'Survey 11', 'Survey 12'] },
-    { topic: 'Travel Experiences', surveys: ['Survey 13', 'Survey 14', 'Survey 15'] },
-    { topic: 'Healthy Eating', surveys: ['Survey 16', 'Survey 17', 'Survey 18'] },
-    { topic: 'Favorite Hobbies', surveys: ['Survey 19', 'Survey 20', 'Survey 21'] },
-    { topic: 'Weekend Plans', surveys: ['Survey 22', 'Survey 23', 'Survey 24'] },
-    { topic: 'Tech Gadgets', surveys: ['Survey 25', 'Survey 26', 'Survey 27'] },
-    { topic: 'Entertainment Choices', surveys: ['Survey 28', 'Survey 29', 'Survey 30'] },
-  ];
+      const surveyTopics = [
+        { topic: 'Recent Work Experience', surveys: [
+          'Recent role & responsibility',
+          'Skills developed',
+          'Challenges faced',
+          'Enjoyable aspects',
+          'Areas for improvement',
+          'Job preparation',
+          'Successful project',
+          'Lessons learned',
+          'Work-life balance',
+          'Future career goals'
+        ]
+      },
+      { topic: 'Daily Habits', surveys: [
+          'Morning routine',
+          'Task management',
+          'Productivity habits',
+          'Diet balance',
+          'Exercise routine',
+          'Evening unwind',
+          'Sleep schedule',
+          'Goal tracking',
+          'Focus strategies',
+          'Habit changes'
+        ]
+      },
+      { topic: 'Fitness Activities', surveys: [
+          'Favorite exercise',
+          'Workout frequency',
+          'Fitness goals',
+          'Motivation strategies',
+          'Workout routine',
+          'Fitness challenges',
+          'Progress tracking',
+          'Post-workout routine',
+          'Balance with responsibilities',
+          'New fitness activities'
+        ]
+      },
+      { topic: 'Social Media Usage', surveys: [
+          'Daily usage time',
+          'Preferred platforms',
+          'Content preference',
+          'Privacy management',
+          'Impact on life',
+          'Engagement with others',
+          'Reducing time',
+          'Handling negativity',
+          'Benefits',
+          'Habit changes'
+        ]
+      },
+      { topic: 'Travel Experiences', surveys: [
+          'Favorite destination',
+          'Trip planning',
+          'Travel experiences',
+          'Expense management',
+          'Memorable trip',
+          'Travel challenges',
+          'Safety measures',
+          'Bucket list destinations',
+          'Documenting experiences',
+          'Cultural experiences'
+        ]
+      },
+      { topic: 'Healthy Eating', surveys: [
+          'Typical healthy meal',
+          'Fruit & vegetable intake',
+          'Avoiding unhealthy snacks',
+          'Meal planning',
+          'Favorite recipes',
+          'Hydration',
+          'Diet challenges',
+          'Balancing indulgence',
+          'Diet changes',
+          'Portion control'
+        ]
+      },
+      { topic: 'Favorite Hobbies', surveys: [
+          'Joyful hobbies',
+          'Discovery of hobbies',
+          'Time management',
+          'New hobbies to try',
+          'Well-being contribution',
+          'Memorable experiences',
+          'Sharing hobbies',
+          'Pursuit challenges',
+          'Influence on daily life',
+          'Skills learned'
+        ]
+      },
+      { topic: 'Weekend Plans', surveys: [
+          'Typical weekend',
+          'Favorite activities',
+          'Relaxation vs. productivity',
+          'Weekend day activity',
+          'Activity planning',
+          'New activities to try',
+          'Involving others',
+          'Making the most of weekends',
+          'Seasonal changes',
+          'Recent enjoyable plan'
+        ]
+      },
+      { topic: 'Tech Gadgets', surveys: [
+          'Indispensable gadgets',
+          'Tech trends',
+          'Gadget features',
+          'Gadget management',
+          'Latest innovations',
+          'Maintenance',
+          'Next gadgets',
+          'Daily integration',
+          'Recent useful gadget',
+          'Performance evaluation'
+        ]
+      },
+      { topic: 'Entertainment Choices', surveys: [
+          'Preferred types',
+          'Discovering options',
+          'Favorite movie/show',
+          'Balancing with activities',
+          'Favorite books/authors',
+          'Upcoming events',
+          'Role in life',
+          'New trends',
+          'Sharing preferences',
+          'Recent experience'
+        ]
+      }
+      ];
 
-  // const handleTopicPress = (topic) => {
-  //   setSelectedTopic(topic);
-  // };
+      const topicIcons = {
+        'Recent Work Experience': 'briefcase-outline',
+        'Daily Habits': 'time-outline',
+        'Fitness Activities': 'barbell-outline',
+        'Social Media Usage': 'logo-facebook',
+        'Travel Experiences': 'airplane-outline',
+        'Healthy Eating': 'nutrition-outline',
+        'Favorite Hobbies': 'brush-outline',
+        'Weekend Plans': 'calendar-outline',
+        'Tech Gadgets': 'phone-portrait-outline',
+        'Entertainment Choices': 'videocam-outline',
+      };
+
+      const SurveyItem = ({ survey, index }) => {
+        const iconName = topicIcons[selectedTopic?.topic] || 'clipboard-outline';
+        return (
+          <View key={index} style={styles.surveyContainer}>
+            <View style={styles.surveyItemContainer}>
+              <Ionicons name={iconName} size={30} color="#4D869C" style={styles.surveyIcon} />
+              <View>
+                <Text style={styles.surveyTitleText}>{selectedTopic?.topic}</Text>
+                <Text style={styles.surveyText}>{survey}</Text>
+              </View>
+            </View>
+          </View>
+        );
+      };
+
 
   return (
     <View style={styles.container}>
@@ -116,6 +347,10 @@ const HomeScreen = () => {
               />
             </TouchableOpacity>
           </View>
+          <View style={styles.powerText}>
+            <Text style={styles.powerTittle}>Powered by Summit Tests </Text>
+            <Ionicons name="shield-checkmark-outline" size={18} color="#EEF7FF" />
+            </View>
       </View>
 
       <View style={styles.categorySec}>
@@ -128,42 +363,38 @@ const HomeScreen = () => {
 
       {/* Scrollable Survey Topics */}
           <FlatList 
-                    ref={flatListRef}
-                    horizontal
-                    data={surveyTopics}
-                    renderItem={({ item, index }) => (
-                      <TouchableOpacity
-                        style={styles.surveyButton}
-                        onPress={() => handleTopicPress(item, index)}
-                      >
-                        <View style={styles.buttonContent}>
-                          {selectedTopic?.topic === item.topic && (
-                            <Ionicons name="checkmark-circle-outline" size={15} color="#EEF7FF" style={styles.icon} />
-                          )}
-                          <Text style={styles.surveyButtonText}>{item.topic}</Text>
-                        </View>
-                      </TouchableOpacity>
-                    )}
-                    keyExtractor={(item) => item.topic}
-                    showsHorizontalScrollIndicator={false}
-                    style={styles.scrollContainer}
+                ref={flatListRef}
+                horizontal
+                data={surveyTopics}
+                extraData={selectedTopic} // Force FlatList to re-render when selectedTopic changes
+                renderItem={({ item, index }) => (
+                  <TouchableOpacity
+                    style={styles.surveyButton}
+                    onPress={() => handleTopicPress(item, index)}
+                  >
+                    <View style={styles.buttonContent}>
+                      {selectedTopic?.topic === item.topic && (
+                        <Ionicons name="checkmark-circle-outline" size={15} color="#EEF7FF" style={styles.icon} />
+                      )}
+                      <Text style={styles.surveyButtonText}>{item.topic}</Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
+                keyExtractor={(item) => item.topic}
+                showsHorizontalScrollIndicator={false}
+                style={styles.scrollContainer}
           />
 
-          <Text style={styles.availableTittle}>Available Tasks for You:</Text>
+
+          <View style={styles.availableOuter}><Text style={styles.availableTittle}>Available Tasks for You:</Text></View>
 
 
 
-      {/* Display Selected Surveys in a Specific Container */}
-            {selectedTopic && (
-        <ScrollView style={styles.selectedTopicContainer}>
-          {selectedTopic.surveys.map((survey, index) => (
-            <View key={index} style={styles.surveyContainer}>
-              <Text style={styles.surveyTitleText}>{selectedTopic.topic} Survey {index + 1}:</Text>
-              <Text style={styles.surveyText}>{survey}</Text>
-            </View>
-          ))}
-        </ScrollView>
-      )}
+      <ScrollView style={styles.surveyListContainer}>
+            {selectedTopic?.surveys.map((survey, index) => (
+              <SurveyItem key={index} survey={survey} index={index} />
+            ))}
+      </ScrollView>
 
       {/* Modal */}
       <Modal
@@ -277,6 +508,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     margin:10,
+    minHeight:40,
   },
   surveyButton: {
     justifyContent: 'center',
@@ -287,7 +519,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 20,
     marginRight: 5,
-    height: 35,
+    maxHeight:35,
   },
   icon:{
     marginRight: 5,
@@ -309,20 +541,25 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     marginTop: 20,
+    
   },
   selectedTopicContainer: {
     // marginTop: 20,
   },
+  // availableOuter:{
+  // marginTop:20
+  // },
   surveyContainer: {
     backgroundColor: '#FFF',
     borderRadius: 10,
-    padding: 15,
-    marginBottom: 10,
+    padding: 20,
+    marginBottom: 5,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
-    margin:10
+    margin:10,
+    overflow:'hidden'
   },
   surveyTitleText: {
     fontSize: 18,
@@ -464,6 +701,23 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#4D869C',
     marginLeft:10,
+  },
+  surveyItemContainer:{
+  flexDirection:'row',
+  alignItems:'center'
+  },
+  surveyIcon:{
+    marginRight:10
+  },
+  powerText:{
+    marginLeft:20,
+    marginBottom:10,
+    marginTop:-10,
+    flexDirection:'row',
+    alignItems:'center',
+  },
+  powerTittle:{
+    color:'#EEF7FF'
   }
   
 });

@@ -2,25 +2,30 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import googleLogo from '../assets/welcomeImg/gLogo.png';
 import signInImg from '../assets/logInImg/login.png'
+import { useAuth } from '../context/AuthContext';
 
 const SignInScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false); // State for loading
+  const [username, setUsername] = useState(''); // Add username state
+  const { setIsAuthenticated, setUsername: setGlobalUsername } = useAuth(); // Update to include setUsername
 
   // Mock sign-in function
   const handleSignIn = () => {
-    if (email === '' || password === '') {
+    if (username === '' || password === '') {
       Alert.alert('Error', 'Please fill in both fields.');
       return;
     }
 
     // Mock validation
-    if (email === 'test@example.com' && password === 'password123') {
+    if (username === 'Test' && password === 'P0p0') {
       // On successful sign-in
-      navigation.navigate('Home');
+      // navigation.navigate('Home');
+      setIsAuthenticated(true); // Set authenticated state to true
+      setGlobalUsername(username); // Set the global usernamer
     } else {
-      Alert.alert('Error', 'Invalid email or password.');
+      Alert.alert('Error', 'Invalid username or password.');
     }
   };
 
@@ -45,12 +50,10 @@ const SignInScreen = ({ navigation }) => {
 
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder="Username"
         placeholderTextColor="#7AB2B2"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        value={email}
-        onChangeText={setEmail}
+        value={username}
+        onChangeText={setUsername}
       />
 
       <TextInput
