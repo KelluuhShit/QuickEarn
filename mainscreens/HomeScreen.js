@@ -4,10 +4,16 @@ import { useAuth } from '../context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import bonusImg from '../assets/homeImg/bonus.png';
 import defaultPhoto from '../assets/homeImg/defaultUserPhoto.png';
+import * as ImagePicker from 'expo-image-picker';
+import 'react-native-get-random-values';
+import { Swipeable } from 'react-native-gesture-handler';
+
 
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
+
+import { v4 as uuidv4 } from 'uuid';
 
 
 
@@ -18,6 +24,13 @@ const HomeScreen = () => {
   const [greeting, setGreeting] = useState('');
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [surveyModalVisible, setSurveyModalVisible] = useState(false);
+  const [userPhoto, setUserPhoto] = useState(defaultPhoto);
+
+  const [notifications, setNotifications] = useState([]);
+  const [notificationModalVisible, setNotificationModalVisible] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState(null);
+
+
   
   
   const flatListRef = useRef(null);
@@ -58,72 +71,53 @@ const HomeScreen = () => {
   }, [surveyTopics, selectedTopic]);
 
 
-  useEffect(() => {
-    registerForPushNotificationsAsync();
-  }, []);
+  const requestNotificationPermission = async () => {
+    const { status } = await Notifications.getPermissionsAsync();
+    if (status !== 'granted') {
+      const { status: newStatus } = await Notifications.requestPermissionsAsync();
+      return newStatus === 'granted';
+    }
+    return true;
+  };
+  
 
-  async function registerForPushNotificationsAsync() {
-    let token;
-  
-    if (Constants.isDevice) {
-      try {
-        // Check current permission status
-        const { status: existingStatus } = await Notifications.getPermissionsAsync();
-        let finalStatus = existingStatus;
-  
-        // Request permission if not already granted
-        if (existingStatus !== 'granted') {
-          const { status } = await Notifications.requestPermissionsAsync();
-          finalStatus = status;
-        }
-  
-        // Handle case where permission is not granted
-        if (finalStatus !== 'granted') {
-          alert('Failed to get push token for push notification! Permissions not granted.');
-          return;
-        }
-  
-        // Retrieve push token
-        token = (await Notifications.getExpoPushTokenAsync()).data;
-        console.log('Push Token:', token);
-  
-        // Optionally, store the token securely if needed
-  
-      } catch (error) {
-        console.error('Error registering for push notifications:', error);
-      }
-  
-      // Configure notification channel for Android
-      if (Platform.OS === 'android') {
-        await Notifications.setNotificationChannelAsync('default', {
-          name: 'default',
-          importance: Notifications.AndroidImportance.MAX,
-          vibrationPattern: [0, 250, 250, 250],
-          lightColor: '#FF231F7C',
-        });
-      }
-    } else {
-      // alert('Must use a physical device for Push Notifications');
+  const testNotification = async () => {
+    const hasPermission = await requestNotificationPermission();
+    if (!hasPermission) {
+      console.log("Notification permission not granted.");
+      return;
     }
   
-    return token;
-  }
-  
-  
-
-  async function testNotification() {
     try {
       await Notifications.scheduleNotificationAsync({
         content: {
-          title: "Test Notification",
-          body: "This is a test notification",
+          title: "Moodly Tasks",
+          body: "Reward Claimed Succesfully",
+          data: { timestamp: new Date().toISOString() },
         },
         trigger: { seconds: 1 },
       });
+
+      const newNotification = {
+        id: uuidv4(),
+        title: "Test Notification",
+        body: "This is a test notification",
+        timestamp: new Date().toISOString(),
+      };
+      setNotifications((prevNotifications) => [...prevNotifications, newNotification]);
+
     } catch (error) {
       console.log("Error scheduling notification:", error);
     }
-  }
+  };
+
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    }),
+  });
   
   const handleClaimBonus = async () => {
     // Alert.alert('Bonus Claimed', 'You have claimed your bonus.');
@@ -138,16 +132,55 @@ const HomeScreen = () => {
   };
 
   const handleNotificationsPress = () => {
-    // Handle notifications icon press (e.g., navigate to notifications screen)
+    setNotificationModalVisible(true);
   };
 
   const handleBalancePress = () => {
 
   };
 
-  const handleChangePhoto = () => {
-    // Handle changing user photo logic
+  const handleChangePhoto = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+    if (status !== 'granted') {
+      Alert.alert('Permission Denied', 'Sorry, we need camera roll permissions to make this work!');
+      return;
+    }
+    
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+    
+    if (!result.canceled) {
+      const selectedImageUri = result.assets[0]?.uri;
+      
+      if (typeof selectedImageUri === 'string') {
+        // console.log('Selected image URI:', selectedImageUri);
+        setUserPhoto(selectedImageUri);
+      } else {
+        // console.error('Selected image URI is not a string:', selectedImageUri);
+      }
+    }
   };
+
+      useEffect(() => {
+        // Set up notification listener
+        const subscription = Notifications.addNotificationReceivedListener(notification => {
+          setSelectedNotification({
+            title: notification.request.content.title,
+            body: notification.request.content.body,
+            timestamp: Date.now(),
+          });
+          // setNotificationModalVisible(true);
+        });
+
+        return () => {
+          subscription.remove();
+        };
+      }, []);
 
   const handleSurveyPress = () => {
     setSurveyModalVisible(true);
@@ -304,6 +337,12 @@ const HomeScreen = () => {
         'Entertainment Choices': 'videocam-outline',
       };
 
+      const removeNotification = (id) => {
+        setNotifications((prevNotifications) =>
+          prevNotifications.filter((notification) => notification.id !== id)
+        );
+      };
+
       const SurveyItem = ({ survey, index }) => {
         const iconName = topicIcons[selectedTopic?.topic] || 'clipboard-outline';
         return (
@@ -319,6 +358,85 @@ const HomeScreen = () => {
         );
       };
 
+      const NotificationModal = ({
+        notificationModalVisible,
+        setNotificationModalVisible,
+        notifications,
+        removeNotification,
+      }) => {
+        const renderRightActions = (notificationId) => {
+          return (
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => removeNotification(notificationId)}
+            >
+              <Text style={styles.deleteButtonText}>Delete</Text>
+            </TouchableOpacity>
+          );
+        };
+
+        const getTimeAgo = (timestamp) => {
+          const now = new Date();
+          const notificationTime = new Date(timestamp);
+          const diffInMinutes = Math.floor((now - notificationTime) / (1000 * 60));
+      
+          if (diffInMinutes < 1) return 'Just now';
+          if (diffInMinutes === 1) return '1 minute ago';
+          return `${diffInMinutes} minutes ago`;
+        };
+      
+        return (
+          <Modal
+            transparent={true}
+            animationType="slide"
+            visible={notificationModalVisible}
+            onRequestClose={() => setNotificationModalVisible(false)}
+          >
+            <View style={styles.notificationModal}>
+              <View style={styles.notificationModalContent}>
+                {notifications.length > 0 ? (
+                  <ScrollView>
+                    {notifications
+                      .slice()
+                      .reverse()
+                      .map((notification, index) => (
+                        <Swipeable
+                          key={index}
+                          renderRightActions={() => renderRightActions(notification.id)}
+                        >
+                          <View style={styles.notificationItem}>
+                            {/* Use optional chaining to avoid accessing properties of null */}
+                            <Text style={styles.modalTitle}>
+                              {selectedNotification?.title || 'No Title'}
+                            </Text>
+                            <Text style={styles.notificationmodalText}>
+                              {selectedNotification?.body || 'No Body'}
+                            </Text>
+                            <Text style={styles.notificationmodalText}>
+                              Received {getTimeAgo(notification.timestamp)}
+                            </Text>
+                          </View>
+                        </Swipeable>
+                      ))}
+                  </ScrollView>
+                ) : (
+                  <Text style={styles.modalText}>No notifications</Text>
+                )}
+              </View>
+              <TouchableOpacity
+                style={styles.notificationButton}
+                onPress={() => setNotificationModalVisible(false)}
+              >
+                <Text style={styles.buttonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </Modal>
+        );
+      };
+      
+
+      
+
 
   return (
     <View style={styles.container}>
@@ -329,27 +447,38 @@ const HomeScreen = () => {
                 <Ionicons name="person-circle-outline" size={32} color="#EEF7FF" />
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={handleNotificationsPress}>
-                <Ionicons name="notifications-outline" size={32} color="#EEF7FF" />
-              </TouchableOpacity>
+              <View style={styles.notificationContainer}>
+                {notifications.length > 0 && (
+                  <View style={styles.notificationMark} />
+                )}
+                <TouchableOpacity onPress={handleNotificationsPress}>
+                  <Ionicons name="notifications-outline" size={32} color="#EEF7FF" />
+                </TouchableOpacity>
+              </View>
           </View>
 
           {/* Greeting and Photo Container */}
           <View style={styles.greetingContainer}>
-            <Text style={styles.greetingText}>
-              {greeting} {'\n'}
-              <Text style={styles.usernameText}>{username}</Text>!
-            </Text>
-            <TouchableOpacity onPress={handleChangePhoto}>
+              <Text style={styles.greetingText}>
+                {greeting} {'\n'}
+                <Text style={styles.usernameText}>{username}</Text>!
+              </Text>
+              <TouchableOpacity onPress={handleChangePhoto}>
               <Image
-                source={defaultPhoto} // Replace with user's photo or default
+                source={userPhoto && typeof userPhoto === 'string' ? { uri: userPhoto } : defaultPhoto}
                 style={styles.userPhoto}
               />
-            </TouchableOpacity>
+                <Ionicons
+                  name="pencil"
+                  size={15}
+                  color="white"
+                  style={styles.editIcon}
+                />
+              </TouchableOpacity>
           </View>
           <View style={styles.powerText}>
             <Text style={styles.powerTittle}>Powered by Summit Tests </Text>
-            <Ionicons name="shield-checkmark-outline" size={18} color="#EEF7FF" />
+            <Ionicons name="shield-checkmark-outline" size={13} color="#EEF7FF" />
             </View>
       </View>
 
@@ -455,6 +584,16 @@ const HomeScreen = () => {
             </View>
       </Modal>
 
+      {/* Modal for Notifications */}
+
+      <NotificationModal
+        notificationModalVisible={notificationModalVisible}
+        setNotificationModalVisible={setNotificationModalVisible}
+        notifications={notifications}
+        removeNotification={removeNotification}
+      />
+
+
     </View>
   );
 };
@@ -490,14 +629,14 @@ const styles = StyleSheet.create({
   greetingText: {
     fontSize: 20,
     color: '#EEF7FF',
-    fontFamily: 'Rubik-Regular',
+    // fontFamily: 'Rubik-Regular', 
     fontWeight: '200',
   },
   usernameText: {
     fontSize: 25,
     fontWeight: 'bold',
     color: '#EEF7FF',
-    fontFamily: 'Rubik-Bold',
+    // fontFamily: 'Rubik-Regular', 
   },
   userPhoto: {
     width: 60,
@@ -527,7 +666,7 @@ const styles = StyleSheet.create({
   surveyButtonText: {
     color: '#EEF7FF',
     fontSize: 15,
-    fontFamily: 'Rubik-Regular',
+    // fontFamily: 'Rubik-Regular', 
     justifyContent:'center',
     alignItems:'center',
   },
@@ -566,12 +705,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#4D869C',
     marginBottom: 5,
-    fontFamily: 'Rubik-Bold',
+    // fontFamily: 'Rubik-Regular', 
   },
   surveyText: {
     fontSize: 16,
     color: '#4D869C',
-    fontFamily: 'Rubik-Regular',
+    // fontFamily: 'Rubik-Regular', 
   },
   modalContainer: {
     flex: 1,
@@ -591,20 +730,21 @@ const styles = StyleSheet.create({
     color: '#4D869C',
     textAlign: 'center',
     marginVertical: 20,
-    fontFamily: 'Rubik-Regular',
+    // fontFamily: 'Rubik-Regular', 
   },
   button: {
-    backgroundColor: '#4D869C',
+    borderWidth:2,
+    borderColor:'#4D869C',
     paddingVertical: 15,
     paddingHorizontal: 30,
-    borderRadius: 10,
     width: '100%',
+    borderRadius:50
   },
   buttonText: {
-    color: '#EEF7FF',
+    color: '#4D869C',
     fontSize: 16,
     fontWeight: 'bold',
-    fontFamily: 'Rubik-Regular',
+    // fontFamily: 'Rubik-Regular', 
     textAlign: 'center',
   },
   bonusImg: {
@@ -619,14 +759,14 @@ const styles = StyleSheet.create({
   balText:{
     fontSize: 15,
     color: '#4D869C',
-    fontFamily: 'Rubik-Regular',
+    // fontFamily: 'Rubik-Regular', 
     marginLeft:10,
     marginTop:10
   },
   seeAlltext:{
     fontSize: 15,
     color: '#7AB2B2',
-    fontFamily: 'Rubik-Regular',
+    // fontFamily: 'Rubik-Regular', 
     marginLeft:10,
     marginTop:10,
     justifyContent:'center',
@@ -677,7 +817,7 @@ const styles = StyleSheet.create({
   surveyModalButtonText: {
     color: '#EEF7FF',
     fontSize: 15,
-    fontFamily: 'Rubik-Regular',
+    // fontFamily: 'Rubik-Regular', 
   },
   closeButton: {
     marginTop: 50,
@@ -717,9 +857,67 @@ const styles = StyleSheet.create({
     alignItems:'center',
   },
   powerTittle:{
-    color:'#EEF7FF'
+    color:'#EEF7FF',
+    fontSize:10,
+  },
+  editIcon: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)', // or any other color you want for the icon background
+    borderRadius: 20,
+    padding: 5, // adjust the padding as needed
+  },
+  notificationContainer: {
+    position: 'relative',
+  },
+  notificationMark: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'red',
+  },
+  notificationModal:{
+    backgroundColor: '#fff',
+    flex: 1,
+    width: '100%',
+    justifyContent:'center',
+    alignItems:'center'
+    
+  },
+  notificationModalContent:{
+    flex: 1,
+    marginTop:20,
+    width:'90%'
+  },
+  notificationButton:{
+    borderWidth:2,
+    borderColor:'#4D869C',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    width: '90%',
+    borderRadius:50,
+    marginBottom:50
+  },
+  notificationItem:{
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 5,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+    margin:3,
+    overflow:'hidden'
+  },
+  notificationmodalText:{
+    fontSize: 15,
+    color: '#4D869C',
   }
-  
 });
 
 export default HomeScreen;

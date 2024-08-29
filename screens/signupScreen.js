@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#7AB2B2',
     marginBottom: 40,
-    fontFamily: 'Rubik-Regular',
+    // fontFamily: 'Rubik-Regular', 
   },
   input: {
     width: '100%',
@@ -125,13 +125,13 @@ const styles = StyleSheet.create({
     color: '#EEF7FF',
     fontSize: 16,
     fontWeight: 'bold',
-    fontFamily: 'Rubik-Regular',
+    // fontFamily: 'Rubik-Regular', 
   },
   orText: {
     fontSize: 16,
     color: '#7AB2B2',
     marginBottom: 20,
-    fontFamily: 'Rubik-Regular',
+    // fontFamily: 'Rubik-Regular', 
   },
   signInLink: {
     marginTop: 30,
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     color: '#4D869C',
     fontSize: 14,
     fontWeight: '600',
-    fontFamily: 'Rubik-Regular',
+    // fontFamily: 'Rubik-Regular',
   },
   createImg: {
     width: 200,

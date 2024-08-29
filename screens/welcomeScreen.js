@@ -44,7 +44,7 @@ const WelcomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>QuickEarn Tasks App</Text>
+      <Text style={styles.header}>Moodly Tasks App</Text>
 
       <Text style={styles.imageDescription}>
         {imageDescriptions[currentImageIndex]} {/* Display description */}
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     color: '#7AB2B2',
     marginBottom: 30,
-    fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
+    // fontFamily: 'Rubik-Regular', 
     fontWeight: 'bold',
   },
   image: {
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     color: '#7AB2B2',
     textAlign: 'center',
     marginBottom: 10,
-    fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
+    // fontFamily: 'Rubik-Regular', 
   },
   radioButtonContainer: {
     flexDirection: 'row',
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     color: '#EEF7FF',
     fontSize: 16,
     fontWeight: 'bold',
-    fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
+    // fontFamily: 'Rubik-Regular', 
     textAlign: 'center',
   },
 });

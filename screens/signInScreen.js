@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#7AB2B2',
     marginBottom: 40,
-    fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
+    // fontFamily: 'Rubik-Regular', 
   },
   input: {
     width: '100%',
@@ -128,19 +128,19 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     marginBottom: 20,
-    fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
+    // fontFamily: 'Rubik-Regular', 
   },
   buttonText: {
     color: '#EEF7FF',
     fontSize: 16,
     fontWeight: 'bold',
-    fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
+    // fontFamily: 'Rubik-Regular', 
   },
   orText: {
     fontSize: 16,
     color: '#7AB2B2',
     marginBottom: 20,
-    fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
+    // fontFamily: 'Rubik-Regular', 
   },
   googleButton: {
     flexDirection: 'row',
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     color: '#4D869C',
     fontSize: 16,
     fontWeight: 'bold',
-    fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
+    // fontFamily: 'Rubik-Regular', 
   },
   signUpLink: {
     marginTop: 30,
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     color: '#4D869C',
     fontSize: 14,
     fontWeight: '600',
-    fontFamily: 'Rubik-Regular', // Apply Rubik Regular font
+    // fontFamily: 'Rubik-Regular', 
   },
 });
 

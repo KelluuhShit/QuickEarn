@@ -5,6 +5,8 @@ import AuthNavigator from './navigation/AuthNavigator';
 import MainTabNavigator from './navigation/MainTabNavigator';
 import * as Font from 'expo-font';
 
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 const loadFonts = async () => {
   await Font.loadAsync({
     'rubik-regular': require('./assets/fonts/Rubik-Regular.ttf'),
@@ -34,8 +36,10 @@ const App = () => {
 
 export default function AppWrapper() {
   return (
-    <AuthProvider>
-      <App />
-    </AuthProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </GestureHandlerRootView>
   );
 }
