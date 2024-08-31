@@ -1,6 +1,6 @@
 // screens/SignUpScreen.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image,ScrollView } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import createImg from '../assets/logInImg/create.png';
 
@@ -32,7 +32,9 @@ const SignUpScreen = ({ navigation }) => {
   };
 
   return (
+    <ScrollView style={styles.pageView}>
     <View style={styles.container}>
+      
       <Image
         source={createImg}
         style={styles.createImg}
@@ -84,11 +86,17 @@ const SignUpScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.signInLink} onPress={() => navigation.navigate('SignIn')}>
         <Text style={styles.signInText}>Already have an account? Sign In</Text>
       </TouchableOpacity>
+      
     </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  pageView:{
+    flex: 1,
+    backgroundColor: '#CDE8E5',
+  },
   container: {
     flex: 1,
     backgroundColor: '#CDE8E5',

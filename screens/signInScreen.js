@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import googleLogo from '../assets/welcomeImg/gLogo.png';
 import signInImg from '../assets/logInImg/login.png'
 import { useAuth } from '../context/AuthContext';
@@ -41,7 +41,9 @@ const SignInScreen = ({ navigation }) => {
   };
 
   return (
+    <ScrollView style={styles.pageView}>
     <View style={styles.container}>
+      
       <Image
         source={signInImg}
         style={styles.signInImg}
@@ -92,11 +94,17 @@ const SignInScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.signUpLink} onPress={() => navigation.navigate('SignUp')}>
         <Text style={styles.signUpText}>Don’t have an account? Sign Up</Text>
       </TouchableOpacity>
+      
     </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  pageView:{
+    flex: 1,
+    backgroundColor: '#CDE8E5',
+  },
   container: {
     flex: 1,
     backgroundColor: '#CDE8E5',

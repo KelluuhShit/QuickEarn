@@ -20,8 +20,8 @@ const MainTabNavigator = () => {
             case 'Home':
               iconName = 'home';
               break;
-            case 'Learn':
-              iconName = 'book';
+            case 'Assessment':
+              iconName = 'document-text-outline';
               break;
             case 'Wallet':
               iconName = 'wallet';
@@ -44,7 +44,7 @@ const MainTabNavigator = () => {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Learn" component={LearnScreen} />
+      <Tab.Screen name="Assessment" component={LearnScreen} />
       <Tab.Screen name="Wallet" component={RewardScreen} />
       <Tab.Screen name="Account" component={AccountScreen} />
     </Tab.Navigator>

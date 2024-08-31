@@ -4,8 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthNavigator from './navigation/AuthNavigator';
 import MainTabNavigator from './navigation/MainTabNavigator';
 import * as Font from 'expo-font';
-
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Toast from 'react-native-toast-message';
 
 const loadFonts = async () => {
   await Font.loadAsync({
@@ -30,16 +29,15 @@ const App = () => {
   return (
     <NavigationContainer>
       {isAuthenticated ? <MainTabNavigator /> : <AuthNavigator />}
+      <Toast />
     </NavigationContainer>
   );
 };
 
 export default function AppWrapper() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </GestureHandlerRootView>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   );
 }

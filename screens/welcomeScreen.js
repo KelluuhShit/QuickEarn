@@ -44,7 +44,7 @@ const WelcomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Moodly Tasks App</Text>
+      <Text style={styles.header}>Moodly - Tasks  Remote</Text>
 
       <Text style={styles.imageDescription}>
         {imageDescriptions[currentImageIndex]} {/* Display description */}

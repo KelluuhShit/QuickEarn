@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, Alert, Image, ScrollView, FlatList  } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, Alert, Image, ScrollView, FlatList, TouchableWithoutFeedback } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import bonusImg from '../assets/homeImg/bonus.png';
 import defaultPhoto from '../assets/homeImg/defaultUserPhoto.png';
 import * as ImagePicker from 'expo-image-picker';
 import 'react-native-get-random-values';
-import { Swipeable } from 'react-native-gesture-handler';
-
+import 'react-native-gesture-handler';
+import Toast from 'react-native-toast-message';
 
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
@@ -29,6 +29,8 @@ const HomeScreen = () => {
   const [notifications, setNotifications] = useState([]);
   const [notificationModalVisible, setNotificationModalVisible] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
+
+  const [redirectModal, setredirectModal] = useState(false);
 
 
   
@@ -188,154 +190,174 @@ const HomeScreen = () => {
 
   const closeSurveyModal = () => {
     setSurveyModalVisible(false);
-  }
+  };
+
+  const handleOpenRedirect = ()=>{
+    setredirectModal(true);
+  };
 
 
-      const surveyTopics = [
-        { topic: 'Recent Work Experience', surveys: [
-          'Recent role & responsibility',
-          'Skills developed',
-          'Challenges faced',
-          'Enjoyable aspects',
-          'Areas for improvement',
-          'Job preparation',
-          'Successful project',
-          'Lessons learned',
-          'Work-life balance',
-          'Future career goals'
-        ]
-      },
-      { topic: 'Daily Habits', surveys: [
-          'Morning routine',
-          'Task management',
-          'Productivity habits',
-          'Diet balance',
-          'Exercise routine',
-          'Evening unwind',
-          'Sleep schedule',
-          'Goal tracking',
-          'Focus strategies',
-          'Habit changes'
-        ]
-      },
-      { topic: 'Fitness Activities', surveys: [
-          'Favorite exercise',
-          'Workout frequency',
-          'Fitness goals',
-          'Motivation strategies',
-          'Workout routine',
-          'Fitness challenges',
-          'Progress tracking',
-          'Post-workout routine',
-          'Balance with responsibilities',
-          'New fitness activities'
-        ]
-      },
-      { topic: 'Social Media Usage', surveys: [
-          'Daily usage time',
-          'Preferred platforms',
-          'Content preference',
-          'Privacy management',
-          'Impact on life',
-          'Engagement with others',
-          'Reducing time',
-          'Handling negativity',
-          'Benefits',
-          'Habit changes'
-        ]
-      },
-      { topic: 'Travel Experiences', surveys: [
-          'Favorite destination',
-          'Trip planning',
-          'Travel experiences',
-          'Expense management',
-          'Memorable trip',
-          'Travel challenges',
-          'Safety measures',
-          'Bucket list destinations',
-          'Documenting experiences',
-          'Cultural experiences'
-        ]
-      },
-      { topic: 'Healthy Eating', surveys: [
-          'Typical healthy meal',
-          'Fruit & vegetable intake',
-          'Avoiding unhealthy snacks',
-          'Meal planning',
-          'Favorite recipes',
-          'Hydration',
-          'Diet challenges',
-          'Balancing indulgence',
-          'Diet changes',
-          'Portion control'
-        ]
-      },
-      { topic: 'Favorite Hobbies', surveys: [
-          'Joyful hobbies',
-          'Discovery of hobbies',
-          'Time management',
-          'New hobbies to try',
-          'Well-being contribution',
-          'Memorable experiences',
-          'Sharing hobbies',
-          'Pursuit challenges',
-          'Influence on daily life',
-          'Skills learned'
-        ]
-      },
-      { topic: 'Weekend Plans', surveys: [
-          'Typical weekend',
-          'Favorite activities',
-          'Relaxation vs. productivity',
-          'Weekend day activity',
-          'Activity planning',
-          'New activities to try',
-          'Involving others',
-          'Making the most of weekends',
-          'Seasonal changes',
-          'Recent enjoyable plan'
-        ]
-      },
-      { topic: 'Tech Gadgets', surveys: [
-          'Indispensable gadgets',
-          'Tech trends',
-          'Gadget features',
-          'Gadget management',
-          'Latest innovations',
-          'Maintenance',
-          'Next gadgets',
-          'Daily integration',
-          'Recent useful gadget',
-          'Performance evaluation'
-        ]
-      },
-      { topic: 'Entertainment Choices', surveys: [
-          'Preferred types',
-          'Discovering options',
-          'Favorite movie/show',
-          'Balancing with activities',
-          'Favorite books/authors',
-          'Upcoming events',
-          'Role in life',
-          'New trends',
-          'Sharing preferences',
-          'Recent experience'
-        ]
-      }
-      ];
+  const surveyTopics = [
+    { topic: 'Recent Work Experience', surveys: [
+      'Recent role & responsibility',
+      'Skills developed',
+      'Challenges faced',
+      'Enjoyable aspects',
+      'Areas for improvement',
+      'Job preparation',
+      'Successful project',
+      'Lessons learned',
+      'Work-life balance',
+      'Future career goals'
+    ]},
+    { topic: 'AI & Tech Innovations', surveys: [
+      'Latest AI tools used',
+      'Impact of AI on work',
+      'Tech skills learned',
+      'Future of AI & tech',
+      'Tech trends to watch',
+      'Ethics in AI development',
+      'Tech-driven productivity',
+      'AI in daily life',
+      'Personal AI projects',
+      'AI and job security'
+    ]},
+    { topic: 'Blockchain & Crypto', surveys: [
+      'Understanding blockchain',
+      'Crypto investments',
+      'Blockchain applications',
+      'Risks in crypto market',
+      'Future of blockchain',
+      'Impact on finance',
+      'Decentralized finance (DeFi)',
+      'Crypto security practices',
+      'NFTs and digital assets',
+      'Personal experiences with crypto'
+    ]},
+    { topic: 'Daily Habits', surveys: [
+      'Morning routine',
+      'Task management',
+      'Productivity habits',
+      'Diet balance',
+      'Exercise routine',
+      'Evening unwind',
+      'Sleep schedule',
+      'Goal tracking',
+      'Focus strategies',
+      'Habit changes'
+    ]},
+    { topic: 'Fitness Activities', surveys: [
+      'Favorite exercise',
+      'Workout frequency',
+      'Fitness goals',
+      'Motivation strategies',
+      'Workout routine',
+      'Fitness challenges',
+      'Progress tracking',
+      'Post-workout routine',
+      'Balance with responsibilities',
+      'New fitness activities'
+    ]},
+    { topic: 'Social Media & Digital Life', surveys: [
+      'Daily usage time',
+      'Preferred platforms',
+      'Content preference',
+      'Privacy management',
+      'Impact on life',
+      'Digital well-being',
+      'Reducing screen time',
+      'Handling negativity online',
+      'Benefits of social media',
+      'Managing digital identity'
+    ]},
+    { topic: 'Travel Experiences', surveys: [
+      'Favorite destination',
+      'Trip planning',
+      'Travel experiences',
+      'Expense management',
+      'Memorable trip',
+      'Travel challenges',
+      'Safety measures',
+      'Bucket list destinations',
+      'Documenting experiences',
+      'Cultural experiences'
+    ]},
+    { topic: 'Healthy Eating', surveys: [
+      'Typical healthy meal',
+      'Fruit & vegetable intake',
+      'Avoiding unhealthy snacks',
+      'Meal planning',
+      'Favorite recipes',
+      'Hydration',
+      'Diet challenges',
+      'Balancing indulgence',
+      'Diet changes',
+      'Portion control'
+    ]},
+    { topic: 'Favorite Hobbies', surveys: [
+      'Joyful hobbies',
+      'Discovery of hobbies',
+      'Time management',
+      'New hobbies to try',
+      'Well-being contribution',
+      'Memorable experiences',
+      'Sharing hobbies',
+      'Pursuit challenges',
+      'Influence on daily life',
+      'Skills learned'
+    ]},
+    { topic: 'Weekend Plans', surveys: [
+      'Typical weekend',
+      'Favorite activities',
+      'Relaxation vs. productivity',
+      'Weekend day activity',
+      'Activity planning',
+      'New activities to try',
+      'Involving others',
+      'Making the most of weekends',
+      'Seasonal changes',
+      'Recent enjoyable plan'
+    ]},
+    { topic: 'Tech Gadgets & Trends', surveys: [
+      'Indispensable gadgets',
+      'Tech trends',
+      'Gadget features',
+      'Gadget management',
+      'Latest innovations',
+      'Maintenance tips',
+      'Next gadgets',
+      'Daily integration of tech',
+      'Recent useful gadget',
+      'Performance evaluation'
+    ]},
+    { topic: 'Entertainment Choices', surveys: [
+      'Preferred entertainment types',
+      'Discovering new options',
+      'Favorite movie/show',
+      'Balancing entertainment with activities',
+      'Favorite books/authors',
+      'Upcoming events',
+      'Role in daily life',
+      'New entertainment trends',
+      'Sharing entertainment preferences',
+      'Recent entertainment experiences'
+    ]}
+  ];
 
-      const topicIcons = {
-        'Recent Work Experience': 'briefcase-outline',
-        'Daily Habits': 'time-outline',
-        'Fitness Activities': 'barbell-outline',
-        'Social Media Usage': 'logo-facebook',
-        'Travel Experiences': 'airplane-outline',
-        'Healthy Eating': 'nutrition-outline',
-        'Favorite Hobbies': 'brush-outline',
-        'Weekend Plans': 'calendar-outline',
-        'Tech Gadgets': 'phone-portrait-outline',
-        'Entertainment Choices': 'videocam-outline',
-      };
+  const topicIcons = {
+    'AI & Tech Innovations': 'code-outline',
+    'Blockchain & Crypto': 'server-outline',
+    'Recent Work Experience': 'briefcase-outline',
+    'Daily Habits': 'time-outline',
+    'Fitness Activities': 'barbell-outline',
+    'Social Media & Digital Life': 'logo-facebook',
+    'Travel Experiences': 'airplane-outline',
+    'Healthy Eating': 'nutrition-outline',
+    'Favorite Hobbies': 'brush-outline',
+    'Weekend Plans': 'calendar-outline',
+    'Tech Gadgets & Trends': 'phone-portrait-outline',
+    'Entertainment Choices': 'videocam-outline',
+  };
 
       const removeNotification = (id) => {
         setNotifications((prevNotifications) =>
@@ -346,15 +368,21 @@ const HomeScreen = () => {
       const SurveyItem = ({ survey, index }) => {
         const iconName = topicIcons[selectedTopic?.topic] || 'clipboard-outline';
         return (
-          <View key={index} style={styles.surveyContainer}>
-            <View style={styles.surveyItemContainer}>
-              <Ionicons name={iconName} size={30} color="#4D869C" style={styles.surveyIcon} />
+          <TouchableOpacity onPress={handleOpenRedirect} style={styles.surveyContainer} activeOpacity={0.7}>
+            <View key={index} style={styles.surveyItemContainer}>
+              <View style={styles.iconMin}>
+              <Ionicons name={iconName} size={30} color="#6c757d" style={styles.surveyIcon} />
+              <View style={styles.durationContainer}>
+                {/* <Ionicons name="time-outline" size={16} color="#6c757d" style={styles.clockIcon} /> */}
+                <Text style={styles.durationText}>up to $10</Text>
+              </View>
+              </View>
               <View>
                 <Text style={styles.surveyTitleText}>{selectedTopic?.topic}</Text>
                 <Text style={styles.surveyText}>{survey}</Text>
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
         );
       };
 
@@ -364,17 +392,6 @@ const HomeScreen = () => {
         notifications,
         removeNotification,
       }) => {
-        const renderRightActions = (notificationId) => {
-          return (
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={() => removeNotification(notificationId)}
-            >
-              <Text style={styles.deleteButtonText}>Delete</Text>
-            </TouchableOpacity>
-          );
-        };
-
         const getTimeAgo = (timestamp) => {
           const now = new Date();
           const notificationTime = new Date(timestamp);
@@ -383,6 +400,16 @@ const HomeScreen = () => {
           if (diffInMinutes < 1) return 'Just now';
           if (diffInMinutes === 1) return '1 minute ago';
           return `${diffInMinutes} minutes ago`;
+        };
+      
+        const handleRemoveNotification = (id) => {
+          removeNotification(id);
+          Toast.show({
+            type: 'success',
+            position: 'bottom',
+            text1: 'Notification deleted',
+            text2: 'The notification has been successfully removed.',
+          });
         };
       
         return (
@@ -400,13 +427,12 @@ const HomeScreen = () => {
                       .slice()
                       .reverse()
                       .map((notification, index) => (
-                        <Swipeable
+                        <TouchableOpacity
                           key={index}
-                          renderRightActions={() => renderRightActions(notification.id)}
+                          onLongPress={() => handleRemoveNotification(notification.id)}
+                          style={styles.notificationItem}
                         >
-                          <View style={styles.notificationItem}>
-                            {/* Use optional chaining to avoid accessing properties of null */}
-                            <Text style={styles.modalTitle}>
+                          <Text style={styles.modalTitle}>
                               {selectedNotification?.title || 'No Title'}
                             </Text>
                             <Text style={styles.notificationmodalText}>
@@ -415,8 +441,7 @@ const HomeScreen = () => {
                             <Text style={styles.notificationmodalText}>
                               Received {getTimeAgo(notification.timestamp)}
                             </Text>
-                          </View>
-                        </Swipeable>
+                        </TouchableOpacity>
                       ))}
                   </ScrollView>
                 ) : (
@@ -435,7 +460,6 @@ const HomeScreen = () => {
       };
       
 
-      
 
 
   return (
@@ -483,7 +507,7 @@ const HomeScreen = () => {
       </View>
 
       <View style={styles.categorySec}>
-      <Text style={styles.balText}>survey categories</Text>
+      <Text style={styles.balText}>Task categories</Text>
       <Text style={styles.balText}>|</Text>
         <TouchableOpacity onPress={handleSurveyPress} style={styles.seeAll}>
           <Text style={styles.seeAlltext}>see all</Text>
@@ -491,7 +515,7 @@ const HomeScreen = () => {
       </View>
 
       {/* Scrollable Survey Topics */}
-          <FlatList 
+          <FlatList
                 ref={flatListRef}
                 horizontal
                 data={surveyTopics}
@@ -515,15 +539,17 @@ const HomeScreen = () => {
           />
 
 
-          <View style={styles.availableOuter}><Text style={styles.availableTittle}>Available Tasks for You:</Text></View>
+          <View style={styles.availableOuter}><Text style={styles.availableTittle}>Remote Tasks for You:</Text></View>
 
 
-
-      <ScrollView style={styles.surveyListContainer}>
+                    {/* survey List.Home */}
+      
+      <ScrollView style={styles.surveyListContainer} >
             {selectedTopic?.surveys.map((survey, index) => (
               <SurveyItem key={index} survey={survey} index={index} />
             ))}
       </ScrollView>
+      
 
       {/* Modal */}
       <Modal
@@ -537,7 +563,7 @@ const HomeScreen = () => {
             <Image source={bonusImg} style={styles.bonusImg} />
             <Text style={styles.modalText}>
               Congratulations!! {username}.
-              {'\n'}You have received KES 50 Welcome bonus.
+              {'\n'}You have received USD 50 Welcome bonus.
             </Text>
             <TouchableOpacity style={styles.button} onPress={handleClaimBonus}>
               <Text style={styles.buttonText}>Claim Bonus</Text>
@@ -555,10 +581,10 @@ const HomeScreen = () => {
       >
             <View style={styles.surveyModalContainer}>
                 <View style={styles.surveyModalContent}>
-                  <Text style={styles.surveyModalTitle}>All Survey Categories</Text>
+                  <Text style={styles.surveyModalTitle}>All Task Categories</Text>
 
                   <Text style={styles.surveyExplain}>
-                  Pick your favorite survey topic below to view related tasks and start earning rewards.{'\n'}
+                  Pick your favorite topics below to view related tasks and start earning rewards.{'\n'}
                   Good luck and enjoy the rewards!
                   </Text>
                   
@@ -592,6 +618,19 @@ const HomeScreen = () => {
         notifications={notifications}
         removeNotification={removeNotification}
       />
+
+
+          <Modal
+            transparent={true}
+            animationType="slide"
+            visible={redirectModal}
+            onRequestClose={() => setredirectModal(false)}
+          >
+            <View style={styles.surveyRedirect}>
+              <Text>You are about to start task</Text>
+              
+            </View>
+          </Modal>
 
 
     </View>
@@ -690,8 +729,8 @@ const styles = StyleSheet.create({
   // },
   surveyContainer: {
     backgroundColor: '#FFF',
-    borderRadius: 10,
-    padding: 20,
+    borderRadius: 2,
+    padding: 15,
     marginBottom: 5,
     shadowColor: '#000',
     shadowOpacity: 0.1,
@@ -708,8 +747,8 @@ const styles = StyleSheet.create({
     // fontFamily: 'Rubik-Regular', 
   },
   surveyText: {
-    fontSize: 16,
-    color: '#4D869C',
+    fontSize: 14,
+    color: '#6c757d',
     // fontFamily: 'Rubik-Regular', 
   },
   modalContainer: {
@@ -849,6 +888,11 @@ const styles = StyleSheet.create({
   surveyIcon:{
     marginRight:10
   },
+  iconMin:{
+  flexDirection:'column',
+  marginRight:10,
+  gap:5,
+  },
   powerText:{
     marginLeft:20,
     marginBottom:10,
@@ -904,7 +948,7 @@ const styles = StyleSheet.create({
   },
   notificationItem:{
     backgroundColor: '#FFF',
-    borderRadius: 10,
+    borderRadius: 2,
     padding: 10,
     marginBottom: 5,
     shadowColor: '#000',
@@ -917,6 +961,25 @@ const styles = StyleSheet.create({
   notificationmodalText:{
     fontSize: 15,
     color: '#4D869C',
+  },
+  surveyRedirect:{
+    flex:1,
+    backgroundColor:'#FFF'
+  },
+  durationContainer:{
+    flexDirection:'row',
+    alignItems:'center',
+    gap:5,
+  },
+  durationText:{
+    color:'#6c757d',
+    fontSize:12,
+    padding:2,
+    paddingHorizontal:7,
+    borderRadius:2,
+    borderColor:'#4D869C',
+    backgroundColor:'#CDE8E5',
+    elevation: 1,
   }
 });
 
