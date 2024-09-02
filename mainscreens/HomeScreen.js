@@ -46,7 +46,7 @@ const HomeScreen = () => {
 
   useEffect(() => {
     if (username) {
-      setModalVisible(true);
+      // setModalVisible(true);
     }
   }, [username]);
 

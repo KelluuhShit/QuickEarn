@@ -23,6 +23,7 @@ const LearnScreen = () => {
             </View>
           </View>
 
+          <View style={styles.coverCont}>
           <View style={styles.assessInstructCont}>
             <Text style={styles.assessInstruct}>To achieve the best results on this assessment, please complete it in a quiet place with no interruptions. 
               You only need your smartphone to finish the assessment. 
@@ -94,6 +95,7 @@ const LearnScreen = () => {
 
           </View>
 
+          </View>
       </View>
     </ScrollView>
   );
@@ -107,7 +109,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#CDE8E5',
-    padding: 20,
     alignItems: 'center',
   },
   content: {
@@ -118,19 +119,25 @@ const styles = StyleSheet.create({
     backgroundColor:"#4D869C",
   },
   headerBar:{
-
+    width:'100%',
+    
   },
   checkProgress: {
     flexDirection: 'row',
     alignItems: 'center',
-    width:"100%",
     justifyContent:'space-between',
+    alignItems:'center',
+    marginLeft:10,
+    marginRight:10,
     marginTop:5,
+    marginBottom:-5,
   },
   progressBarContainer: {
     flexDirection: 'row',
+    justifyContent:'center',
     alignItems: 'center',
     marginRight: 10,
+    
   },
   progressBar: {
     width: 35,
@@ -143,18 +150,15 @@ const styles = StyleSheet.create({
     color:'#6c757d',
     fontSize:14,
   },
-  assessInstructCont:{
-    marginTop:5,
+  coverCont:{
+    width:'100%',
+    padding:10
   },
   assessInstruct:{
     color:'#7AB2B2',
   },
   testContainer:{
     width:'100%',
-    marginTop:20,
-    borderWidth:1,
-    padding:10,
-    borderColor:'#6c757d',
     borderRadius:2,
     gap:15,
   },
