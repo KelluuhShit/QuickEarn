@@ -1,5 +1,5 @@
-import React, { useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, ScrollView, Image, ImageBackground, TouchableOpacity, Animated, FlatList  } from 'react-native';
+import React, { useRef, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Button, ScrollView, Image, ImageBackground, TouchableOpacity, Animated, FlatList, Modal  } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import smoothImg from '../assets/walletImg/smooth.png'
 import noRecent from '../assets/walletImg/noRecent.png'
@@ -7,6 +7,7 @@ import noRecent from '../assets/walletImg/noRecent.png'
 const RewardScreen = ({ navigation }) => {
 
   const backgroundColorAnim = useRef(new Animated.Value(0)).current;
+  const [accountsModal, setAccountsModal] = useState(false);
 
   useEffect(() => {
     Animated.loop(
@@ -33,16 +34,20 @@ const RewardScreen = ({ navigation }) => {
   // Data for FlatList
   const paymentOptions = [
     { id: '1', title: 'PayPal', color: '#003087' },
-    { id: '2', title: 'Safaricom', color: '#0F9D58' },
+    { id: '2', title: 'MPesa', color: '#0F9D58' },
     { id: '3', title: 'Stripe', color: '#6772e5' },
   ];
 
   // Render each payment button
   const renderPaymentOption = ({ item }) => (
-    <TouchableOpacity style={[styles.paymentButton, { backgroundColor: item.color }]}>
+    <TouchableOpacity style={[styles.paymentButton, { backgroundColor: item.color }]} key={item.id}>
       <Text style={styles.paymentButtonText}>{item.title}</Text>
     </TouchableOpacity>
   );
+
+  const handleAccountDisplay = ()=>{
+    setAccountsModal(true);
+  }
 
 
   return (
@@ -86,15 +91,25 @@ const RewardScreen = ({ navigation }) => {
         </View>
     </ScrollView>
     {/* fatlist with payment ways */}
-    <View style={styles.paymentOptionsContainer}>
-          <FlatList
-            data={paymentOptions}
-            renderItem={renderPaymentOption}
-            keyExtractor={item => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-          />
+    <View style={styles.withOp}>
+      <Text style={styles.withOpTxt}>Withdrawal Options</Text>
+    </View>
+        <Modal
+        transparent={true}
+        animationType="slide"
+        visible={accountsModal}
+        onRequestClose={() => setAccountsModal(false)}>
+        <View style={styles.paymentOptionsContainer}>
+          <ScrollView>
+          {paymentOptions.map(option => renderPaymentOption({ item: option }))}
+          </ScrollView>
         </View>
+        </Modal>
+
+        <TouchableOpacity style={styles.addPayMethod} onPress={handleAccountDisplay}>
+        <Ionicons name="add-circle-outline" size={24} color="#CDE8E5" />
+          <Text style={styles.addPayMethodTxt}>Add preferred option</Text>
+        </TouchableOpacity>
     </View>
     </ScrollView>
   );
@@ -178,22 +193,22 @@ const styles = StyleSheet.create({
   },
   historyNav:{
     flexDirection:'row',
-    width:'90%',
+    width:'100%',
     justifyContent:'space-between',
     marginTop:15,
   },
   historyNavTxt:{
-    color:'#7AB2B2',
+    color:'#4D869C',
     fontSize:15,
   },
   historyNavTxtAll:{
-    color:'#7AB2B2',
+    color:'#4D869C',
     fontSize:15,
     
   },
   seeAllBtn:{
     borderBottomWidth:2,
-    borderBottomColor:'#7AB2B2'
+    borderBottomColor:'#4D869C'
   },
   recentCont:{
     height:300,
@@ -211,6 +226,8 @@ const styles = StyleSheet.create({
     height:200,
   },
   paymentOptionsContainer: {
+    flex:1,
+    backgroundColor:'#fff',
     width: '100%',
     paddingVertical: 10,
   },
@@ -226,6 +243,32 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  withOp:{
+    width:'100%',
+    justifyContent:'flex-start',
+
+  },
+  withOpTxt:{
+    color:'#4D869C',
+    fontSize:15,
+    fontWeight:'bold',
+  },
+  addPayMethod:{
+    backgroundColor:'#4D869C',
+    width:'90%',
+    marginTop:20,
+    borderRadius:25,
+    paddingVertical:13,
+    elevation:3,
+    flexDirection:'row',
+    justifyContent:'center',
+    alignItems:'center',
+    gap:10,
+
+  },
+  addPayMethodTxt:{
+    color:'#CDE8E5',
   },
 });
 
