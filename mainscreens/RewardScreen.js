@@ -34,8 +34,8 @@ const RewardScreen = ({ navigation }) => {
   // Data for FlatList
   const paymentOptions = [
     { id: '1', title: 'PayPal', color: '#003087' },
-    { id: '2', title: 'MPesa', color: '#0F9D58' },
-    { id: '3', title: 'Stripe', color: '#6772e5' },
+    { id: '2', title: 'Stripe', color: '#6772e5' },
+    { id: '3', title: 'MPesa', color: '#0F9D58' },
   ];
 
   // Render each payment button
@@ -84,13 +84,13 @@ const RewardScreen = ({ navigation }) => {
     {/* recent transaction history */}
         <View style={styles.noRecentAlert}>
           <Text style={styles.noRecentExplain}>No Recent Transactions Found.</Text>
-            <Image
+            {/* <Image
                 source={noRecent}
                 style={styles.noRecent}
-              />
+              /> */}
         </View>
     </ScrollView>
-    {/* fatlist with payment ways */}
+    
     <View style={styles.withOp}>
       <Text style={styles.withOpTxt}>Withdrawal Options</Text>
     </View>
@@ -100,9 +100,14 @@ const RewardScreen = ({ navigation }) => {
         visible={accountsModal}
         onRequestClose={() => setAccountsModal(false)}>
         <View style={styles.paymentOptionsContainer}>
+        <Text style={styles.selectTxt}>Select any and add details to continue</Text>
           <ScrollView>
           {paymentOptions.map(option => renderPaymentOption({ item: option }))}
           </ScrollView>
+          
+          <TouchableOpacity style={styles.closePayOption} onPress={()=> setAccountsModal(false)}>
+            <Text style={styles.closeBtntxt}>Close</Text>
+          </TouchableOpacity>
         </View>
         </Modal>
 
@@ -270,6 +275,26 @@ const styles = StyleSheet.create({
   addPayMethodTxt:{
     color:'#CDE8E5',
   },
+  closePayOption:{
+    borderWidth:2,
+    marginRight:20,
+    marginLeft:20,
+    marginBottom:50,
+    borderColor:'#4D869C',
+    paddingVertical:15,
+    borderRadius:50,
+  },
+  closeBtntxt:{
+    color:'#4D869C',
+    textAlign:'center',
+    fontWeight:'bold'
+  },
+  selectTxt:{
+    textAlign:'center',
+    marginTop:20,
+    marginBottom:10,
+    color:'#4D869C'
+  }
 });
 
 export default RewardScreen;
