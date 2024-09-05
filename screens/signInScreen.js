@@ -153,7 +153,6 @@ const styles = StyleSheet.create({
   googleButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 10,
@@ -161,7 +160,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
-    elevation: 5,
+    borderWidth:2,
+    borderColor:'#4D869C',
+    width:'100%',
+    justifyContent:'center',
+    alignItems:'center',
+    maxHeight:60,
   },
   googleLogo: {
     width: 25,
