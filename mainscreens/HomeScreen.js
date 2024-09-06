@@ -656,12 +656,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     borderRadius: 10,
-    marginBottom: 20,
+    marginBottom: 10,
+    marginTop:-20,
   },
   userProfile:{
     backgroundColor: '#4D869C',
-    borderBottomEndRadius:20,
-    borderBottomStartRadius:20,
+    // borderBottomEndRadius:20,
+    // borderBottomStartRadius:20,
     elevation: 3,
     
   },

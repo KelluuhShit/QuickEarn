@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Image, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 
 
     const initialValues = {
@@ -80,28 +80,52 @@ const AccountScreen = ({ navigation }) => {
 
   const [animatedValues, setAnimatedValues] = useState(initialValues);
 
-  useEffect(() => {
-    const incrementValue = (key, target, duration) => {
-      let incrementInterval = setInterval(() => {
-        setAnimatedValues((prevValues) => {
-          let newValue = prevValues[key] + (target / duration) * 50; // Increment value
+useEffect(() => {
+  const incrementValue = (key, target, duration) => {
+    let incrementInterval = setInterval(() => {
+      setAnimatedValues((prevValues) => {
+        let newValue = prevValues[key] + (target / duration) * 50; // Increment value
 
-          if (newValue >= target) {
-            clearInterval(incrementInterval); // Stop when target is reached
-            newValue = target;
-          }
-          
-          return { ...prevValues, [key]: newValue };
-        });
-      }, 100); // Update every 100ms
-    };
+        if (newValue >= target) {
+          clearInterval(incrementInterval); // Stop when target is reached
+          newValue = target;
+        }
 
-    // Animate each value
-    incrementValue('paidOut', targetValues.paidOut, 500);
-    incrementValue('dailyTasks', targetValues.dailyTasks, 500);
-    incrementValue('taskers', targetValues.taskers, 500);
-    incrementValue('reviews', targetValues.reviews, 500);
-  }, []);
+        return { ...prevValues, [key]: newValue };
+      });
+    }, 100); // Update every 100ms
+  };
+
+  const animateValues = () => {
+    // Reset to initial values before starting new animation
+    setAnimatedValues(initialValues);
+
+    // Animate each value again
+    incrementValue('paidOut', targetValues.paidOut, 300);
+    incrementValue('dailyTasks', targetValues.dailyTasks, 300);
+    incrementValue('taskers', targetValues.taskers, 300);
+    incrementValue('reviews', targetValues.reviews, 300);
+  };
+
+  // Initial run
+  animateValues();
+
+  // Replay animation every 5 seconds (5000ms)
+  const intervalId = setInterval(() => {
+    animateValues();
+  }, 10000);
+
+  // Clean up interval on component unmount
+  return () => clearInterval(intervalId);
+}, []);
+
+      const [isDarkTheme, setIsDarkTheme] = useState(false);
+
+        // Toggle function
+        const toggleTheme = () => setIsDarkTheme((previousState) => !previousState);
+
+        // Conditional styles based on theme
+        const themeStyles = isDarkTheme ? darkTheme : lightTheme;
 
   
   return (
@@ -183,6 +207,39 @@ const AccountScreen = ({ navigation }) => {
     </View>
         </View>
 
+        <View style={styles.preferenceBox}>
+          <Text style={styles.preferTittle}>User Preference & features</Text>
+              <View style={styles.userPrefer}>
+
+                    <View style={styles.themeContainer}>
+                        <Text style={styles.themeTxt}>Change Theme</Text>
+                        {/* Switch Button */}
+                        <Switch
+                          // value={isDarkTheme}
+                          // onValueChange={toggleTheme}
+                          // thumbColor={isDarkTheme ? '#f4f3f4' : '#f4f3f4'}
+                          // trackColor={{ false: '#767577', true: '#81b0ff' }}
+                        />
+                    </View>
+
+                    <View style={styles.themeContainer}>
+                        <TouchableOpacity style={styles.privacyBtn}>
+                        <Text style={styles.themeTxt}>Privacy Policy</Text>
+                        <Text style={styles.arrowRight}><Ionicons name="arrow-forward" size={20} color="#CDE8E5" /></Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.themeContainerLog}>
+                        <TouchableOpacity style={styles.logOut}>
+                        <Text style={{ color: "#7AB2B2" }}>Log out</Text>
+                        <Text style={styles.arrowRight}><Ionicons name="log-out-outline" size={24} color="#7AB2B2" /></Text>
+                        </TouchableOpacity>
+                    </View>
+
+
+              </View>
+        </View>
+
         
       </View>
     </ScrollView>
@@ -221,8 +278,10 @@ const styles = StyleSheet.create({
   },
   usernameText: {
     fontSize: 16,
-    color: '#CDE8E5',
+    color: '#7AB2B2',
     fontWeight: 'bold',
+    // borderBottomWidth:2,
+    // borderColor:'#7AB2B2',
   },
   commentText: {
     fontSize: 15,
@@ -230,9 +289,7 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#7AB2B2',
     padding: 10,
-    borderTopLeftRadius:10,
-    borderBottomLeftRadius:10,
-    borderBottomRightRadius:10,
+    borderRadius:2,
   },
   progressBarContainer: {
     width: '50%',
@@ -261,7 +318,7 @@ const styles = StyleSheet.create({
     fontSize:25,
     textAlign:'center',
     fontWeight:'bold',
-    color:'#7AB2B2',
+    color:'#4D869C',
   },
   customBox:{
     width:'100%',
@@ -275,7 +332,7 @@ const styles = StyleSheet.create({
     marginTop:20,
     paddingVertical:20,
     width:'95%',
-    borderRadius:10,
+    borderRadius:2,
     backgroundColor:'#7AB2B2',
   },
   figBox:{
@@ -302,7 +359,79 @@ const styles = StyleSheet.create({
   largeTextTtl:{
     fontSize: 15,
     color:'#CDE8E5',
+  },
+  preferenceBox:{
+    paddingHorizontal:10,
+    marginTop:20,
+  },
+  preferTittle:{
+    color:'#4D869C',
+    fontSize:16,
+  },
+  themeContainer:{
+    justifyContent:'space-between',
+    alignItems:'center',
+    flexDirection:'row',
+    width:'100%',
+    backgroundColor:'#7AB2B2',
+    marginTop:10,
+    height:50,
+    paddingHorizontal:10,
+    borderRadius:2,
+  },
+  themeContainerLog:{
+    alignItems:'center',
+    justifyContent:'space-between',
+    flexDirection:'row',
+    width:'100%',
+    marginTop:10,
+    height:50,
+    paddingHorizontal:10,
+    borderRadius:2,
+    borderWidth:2,
+    borderColor:'#7AB2B2',
+  },
+  userPrefer:{
+    width:'100%',
+  },
+  arrowRight:{
+    marginRight:10,
+  },
+  themeTxt:{
+    color:'#CDE8E5',
+  },
+  privacyBtn:{
+    width:'100%',
+    flexDirection:'row',
+    justifyContent:'space-between',
+  },
+  logOut:{
+    width:'100%',
+    flexDirection:'row',
+    justifyContent:'center',
+    alignItems:'center',
+    gap:20
   }
+});
+
+const lightTheme = StyleSheet.create({
+  background: {
+    backgroundColor: '#FFFFFF',
+  },
+  text: {
+    color: '#000000',
+  },
+  
+});
+
+// Dark theme styles
+const darkTheme = StyleSheet.create({
+  background: {
+    backgroundColor: '#000000',
+  },
+  text: {
+    color: '#FFFFFF',
+  },
 });
 
 export default AccountScreen;
