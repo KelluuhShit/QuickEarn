@@ -23,7 +23,7 @@ const userComments = [
   {
     text: "Moodly is a game-changer! I completed a few tasks and got my payment instantly. Highly recommend!",
     image: require('../assets/users/user1.jpg'),
-    username: "John Doe"
+    username: "Otii Peter"
   },
   {
     text: "I love how easy it is to earn and withdraw money on Moodly. It's been a great side hustle for me.",
@@ -33,17 +33,17 @@ const userComments = [
   {
     text: "Moodly helped me pay off some bills this month. The withdrawal process was smooth and fast!",
     image: require('../assets/users/user3.jpg'),
-    username: "Mark Johnson"
+    username: "Sheila Chepkemoi"
   },
   {
     text: "This app is amazing! I completed tasks in my spare time and was able to withdraw my earnings without any hassle.",
     image: require('../assets/users/user4.jpg'),
-    username: "Emily Brown"
+    username: "Chris Davis"
   },
   {
     text: "Moodly is legit! I’ve already withdrawn twice, and it’s helped me save up for my vacation.",
     image: require('../assets/users/user5.jpg'),
-    username: "Chris Davis"
+    username: "Emily Brown"
   }
 ];
 
@@ -393,6 +393,7 @@ const styles = StyleSheet.create({
   },
   userPrefer:{
     width:'100%',
+    paddingBottom:15,
   },
   arrowRight:{
     marginRight:10,

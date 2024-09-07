@@ -1,9 +1,41 @@
 // mainscreens/LearnScreen.js
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
+import React, { useState} from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Alert} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import ProjectWelcome from '../welcomeScreens/projectWelcome';
+import CodeWelcome from '../welcomeScreens/codeWelcome';
+import NutritionWelcome from '../welcomeScreens/nutritionWelcome';
+import CookingWelcome from '../welcomeScreens/cookingWelcome';
+import SocialWelcome from '../welcomeScreens/socialWelcome';
 
 const LearnScreen = () => {
+
+  const [questionsModal, setQuestionsModal] = useState(false);
+  const [selectedAssessment, setSelectedAssessment] = useState(null);
+
+  const startTest = (assessment) => {
+    setSelectedAssessment(assessment); // Set the selected assessment
+    setQuestionsModal(true);           // Open the modal
+  };
+
+  const renderSelectedAssessment = () => {
+    switch (selectedAssessment) {
+      case 'project':
+        return <ProjectWelcome />;
+      case 'coding':
+        return <CodeWelcome />;
+      case 'nutrition':
+        return <NutritionWelcome />;
+      case 'cooking':
+        return <CookingWelcome />;
+      case 'social':
+        return <SocialWelcome />;
+      default:
+        return null;
+    }
+  };
+
+  
   return (
     <ScrollView style={styles.pageView}>
       <View style={styles.container}>
@@ -35,67 +67,112 @@ const LearnScreen = () => {
           <View style={styles.testContainer}>
 
             <View>
-              <Text style={styles.assesTittle}>Assessments</Text>
+              <Text style={styles.assesTittle}>Assessments - Basics</Text>
             </View>
 
-            <View style={styles.testView} >
-              <View style={styles.testExplain}>
-                <Text style={styles.testTittle}>Professional Development</Text>
-                <Text style={styles.startText}>Remote - Test</Text>
-              </View>
-              <TouchableOpacity style={styles.testButton} >
-                <Ionicons name="play-circle-outline" size={15} color="#6c757d" />
-                <Text style={styles.startText}>Start</Text>
-              </TouchableOpacity>
-            </View>
-
+            {/* Project Management Assessment */}
             <View style={styles.testView}>
               <View style={styles.testExplain}>
-                <Text style={styles.testTittle}>Tech & Innovations</Text>
+                <Text style={styles.testTittle}>Project Management</Text>
                 <Text style={styles.startText}>Remote - Test</Text>
               </View>
-              <TouchableOpacity style={styles.testButton} >
+              <TouchableOpacity
+                style={styles.testButton}
+                onPress={() => startTest('project')}
+              >
                 <Ionicons name="play-circle-outline" size={15} color="#6c757d" />
                 <Text style={styles.startText}>Start</Text>
               </TouchableOpacity>
             </View>
 
+            {/* Coding & Programming Assessment */}
             <View style={styles.testView}>
               <View style={styles.testExplain}>
-                <Text style={styles.testTittle}>Lifestyle & Wellness</Text>
+                <Text style={styles.testTittle}>Coding & Programming</Text>
                 <Text style={styles.startText}>Remote - Test</Text>
               </View>
-              <TouchableOpacity style={styles.testButton} >
+              <TouchableOpacity
+                style={styles.testButton}
+                onPress={() => startTest('coding')}
+              >
                 <Ionicons name="play-circle-outline" size={15} color="#6c757d" />
                 <Text style={styles.startText}>Start</Text>
               </TouchableOpacity>
             </View>
 
+            {/* Nutrition & Health Assessment */}
             <View style={styles.testView}>
               <View style={styles.testExplain}>
-                <Text style={styles.testTittle}>Personal Interests & Hobbies</Text>
+                <Text style={styles.testTittle}>Nutrition & Health</Text>
                 <Text style={styles.startText}>Remote - Test</Text>
               </View>
-              <TouchableOpacity style={styles.testButton} >
+              <TouchableOpacity
+                style={styles.testButton}
+                onPress={() => startTest('nutrition')}
+              >
                 <Ionicons name="play-circle-outline" size={15} color="#6c757d" />
                 <Text style={styles.startText}>Start</Text>
               </TouchableOpacity>
             </View>
 
+            {/* Cooking & Culinary Arts Assessment */}
             <View style={styles.testView}>
               <View style={styles.testExplain}>
-                <Text style={styles.testTittle}>Entertainment & Media</Text>
+                <Text style={styles.testTittle}>Cooking & Culinary Arts</Text>
                 <Text style={styles.startText}>Remote - Test</Text>
               </View>
-              <TouchableOpacity style={styles.testButton} >
+              <TouchableOpacity
+                style={styles.testButton}
+                onPress={() => startTest('cooking')}
+              >
                 <Ionicons name="play-circle-outline" size={15} color="#6c757d" />
                 <Text style={styles.startText}>Start</Text>
               </TouchableOpacity>
             </View>
 
+            {/* Social Media Management Assessment */}
+            <View style={styles.testView}>
+              <View style={styles.testExplain}>
+                <Text style={styles.testTittle}>Social Media Management</Text>
+                <Text style={styles.startText}>Remote - Test</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.testButton}
+                onPress={() => startTest('social')}
+              >
+                <Ionicons name="play-circle-outline" size={15} color="#6c757d" />
+                <Text style={styles.startText}>Start</Text>
+              </TouchableOpacity>
+            </View>
           </View>
+        </View>
 
-          </View>
+          <Modal
+          transparent={true}
+          animationType="slide"
+          visible={questionsModal}
+          onRequestClose={() => Alert.alert('Warning!','You will not pass the test. Complete the test to get verified.',
+          [
+            {
+              text: 'Cancel',
+              style: 'cancel'
+            },
+            {
+              text: 'Close Anyway',
+              onPress: () => {
+                setQuestionsModal(false);
+              }
+            }
+          ]
+          )}
+          >
+          <View style={styles.questionsView}>
+        <View style={styles.modalContent}>
+            {renderSelectedAssessment()}
+        </View>
+    </View>
+
+          </Modal>
       </View>
     </ScrollView>
   );
@@ -202,7 +279,17 @@ const styles = StyleSheet.create({
     marginLeft:5,
     flexDirection:'column',
     gap:5
-  }
+  },
+  questionsView: {
+    flex: 1,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+},
+modalContent: {
+    alignItems: 'center',
+    justifyContent:'center',
+},
 });
 
 export default LearnScreen;
