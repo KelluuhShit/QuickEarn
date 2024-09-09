@@ -661,8 +661,8 @@ const styles = StyleSheet.create({
   },
   userProfile:{
     backgroundColor: '#4D869C',
-    // borderBottomEndRadius:20,
-    // borderBottomStartRadius:20,
+    borderBottomEndRadius:20,
+    borderBottomStartRadius:20,
     elevation: 3,
     
   },

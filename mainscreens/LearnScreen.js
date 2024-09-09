@@ -151,20 +151,7 @@ const LearnScreen = () => {
           transparent={true}
           animationType="slide"
           visible={questionsModal}
-          onRequestClose={() => Alert.alert('Warning!','You will not pass the test. Complete the test to get verified.',
-          [
-            {
-              text: 'Cancel',
-              style: 'cancel'
-            },
-            {
-              text: 'Close Anyway',
-              onPress: () => {
-                setQuestionsModal(false);
-              }
-            }
-          ]
-          )}
+          onRequestClose={() => setQuestionsModal(false)}
           >
           <View style={styles.questionsView}>
         <View style={styles.modalContent}>
@@ -287,8 +274,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
 },
 modalContent: {
+    
     alignItems: 'center',
     justifyContent:'center',
+    
 },
 });
 
