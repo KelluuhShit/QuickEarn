@@ -8,6 +8,9 @@ import NutritionWelcome from '../welcomeScreens/nutritionWelcome';
 import CookingWelcome from '../welcomeScreens/cookingWelcome';
 import SocialWelcome from '../welcomeScreens/socialWelcome';
 
+import { useAssessment } from '../context/AssessmentContext';
+import { useNavigation } from '@react-navigation/native';
+
 const LearnScreen = () => {
 
   const [questionsModal, setQuestionsModal] = useState(false);
@@ -17,6 +20,14 @@ const LearnScreen = () => {
     setSelectedAssessment(assessment); // Set the selected assessment
     setQuestionsModal(true);           // Open the modal
   };
+
+  const { setIsAssessed } = useAssessment(); // Get the setter for assessment
+    const navigation = useNavigation();
+
+    const completeAssessment = () => {
+        setIsAssessed(true); // Set assessment as completed
+        navigation.navigate('HomeScreen'); // Redirect back to HomeScreen
+    };
 
   const renderSelectedAssessment = () => {
     switch (selectedAssessment) {

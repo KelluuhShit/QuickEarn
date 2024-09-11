@@ -9,6 +9,9 @@ import 'react-native-get-random-values';
 import 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 
+import { useAssessment } from '../context/AssessmentContext';
+import { useNavigation } from '@react-navigation/native';
+
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
@@ -196,6 +199,11 @@ const HomeScreen = () => {
     setredirectModal(true);
   };
 
+  const { isAssessed } = useAssessment(); // Get assessment state
+  const navigation = useNavigation(); // Get navigation
+
+        
+
 
   const surveyTopics = [
     { topic: 'Recent Work Experience', surveys: [
@@ -365,26 +373,63 @@ const HomeScreen = () => {
         );
       };
 
+      const assessmentMapping = {
+        'Recent Work Experience': 'Project Management Basics',
+        'Tech Gadgets & Trends': 'Social Media Management',
+        'AI & Tech Innovations': 'Coding & Programming',
+        'Blockchain & Crypto': 'Coding & Programming',
+        'Daily Habits': 'Nutrition & Health',
+        'Fitness Activities': 'Nutrition & Health',
+        'Healthy Eating': 'Nutrition & Health',
+        'Favorite Hobbies': 'Cooking & Culinary Arts',
+        'Social Media & Digital Life': 'Social Media Management',
+        'Weekend Plans': 'Social Media Management',
+        'Travel Experiences': 'Social Media Management',
+        'Entertainment Choices': 'Social Media Management',
+      };
+
+
       const SurveyItem = ({ survey, index }) => {
         const iconName = topicIcons[selectedTopic?.topic] || 'clipboard-outline';
+        const surveyCategory = selectedTopic?.topic; // Assuming selectedTopic?.topic is the survey category
+        const assessmentType = assessmentMapping[surveyCategory] || 'Unknown Assessment'; // Default to 'Unknown Assessment' if category not found
+    
+        const handleTaskStart = () => {
+            if (!isAssessed) {
+                // If user has not completed the assessment, show an alert and redirect
+                Alert.alert(
+                    'Assessment Required',
+                    `Please complete the ${assessmentType} assessment and get Certified before starting this task.`,
+                    [
+                        {
+                            text: 'Go to Assessment',
+                            onPress: () => navigation.navigate('Assessment'),
+                        },
+                    ]
+                );
+            } else {
+                // If assessed, proceed with tasks
+                navigation.navigate('Home');
+            }
+        };
+    
         return (
-          <TouchableOpacity onPress={handleOpenRedirect} style={styles.surveyContainer} activeOpacity={0.7}>
+          <TouchableOpacity onPress={handleTaskStart} style={styles.surveyContainer} activeOpacity={0.7}>
             <View key={index} style={styles.surveyItemContainer}>
               <View style={styles.iconMin}>
-              <Ionicons name={iconName} size={30} color="#6c757d" style={styles.surveyIcon} />
-              <View style={styles.durationContainer}>
-                {/* <Ionicons name="time-outline" size={16} color="#6c757d" style={styles.clockIcon} /> */}
-                <Text style={styles.durationText}>up to $10</Text>
-              </View>
+                <Ionicons name={iconName} size={30} color="#6c757d" style={styles.surveyIcon} />
+                <View style={styles.durationContainer}>
+                  <Text style={styles.durationText}>up to $10</Text>
+                </View>
               </View>
               <View>
-                <Text style={styles.surveyTitleText}>{selectedTopic?.topic}</Text>
+                <Text style={styles.surveyTitleText}>{surveyCategory}</Text>
                 <Text style={styles.surveyText}>{survey}</Text>
               </View>
             </View>
           </TouchableOpacity>
         );
-      };
+    };
 
       const NotificationModal = ({
         notificationModalVisible,
@@ -411,6 +456,7 @@ const HomeScreen = () => {
             text2: 'The notification has been successfully removed.',
           });
         };
+
       
         return (
           <Modal
@@ -619,7 +665,7 @@ const HomeScreen = () => {
         removeNotification={removeNotification}
       />
 
-
+        {/* Modal to redirect user to assesment */}
           <Modal
             transparent={true}
             animationType="slide"
@@ -627,7 +673,15 @@ const HomeScreen = () => {
             onRequestClose={() => setredirectModal(false)}
           >
             <View style={styles.surveyRedirect}>
-              <Text>You are about to start task</Text>
+              <View style={styles.redirectCont}>
+              <Text style={styles.redirectText}>You need to complete at least one assessment before you can start Moodly tasks.
+              Once you've finished one or more assessments, you'll be eligible to proceed with the tasks.
+              </Text>
+              </View>
+
+              <TouchableOpacity style={styles.redirectBtnAsses}>
+                <Text style={styles.redirectBtnText}>Go to Assessment</Text>
+              </TouchableOpacity>
               
             </View>
           </Modal>
@@ -965,7 +1019,11 @@ const styles = StyleSheet.create({
   },
   surveyRedirect:{
     flex:1,
-    backgroundColor:'#FFF'
+    backgroundColor:'#FFF',
+    justifyContent:'center',
+    alignItems:'center',
+    width:'100%',
+    padding:20,
   },
   durationContainer:{
     flexDirection:'row',
@@ -981,6 +1039,30 @@ const styles = StyleSheet.create({
     borderColor:'#4D869C',
     backgroundColor:'#CDE8E5',
     elevation: 1,
+  },
+  redirectCont:{
+    margin:10,
+    borderRadius:2,
+    width:'100%',
+    justifyContent:'center',
+    alignItems:'center',
+  },
+  redirectText:{
+    color:'#4D869C',
+    fontSize:18,
+  },
+  redirectBtnAsses:{
+    width:'100%',
+    paddingVertical:15,
+    marginTop: 50,
+    padding: 10,
+    borderRadius: 50,
+    alignItems: 'center',
+    borderWidth:2,
+    borderColor:'#4D869C',
+  },
+  redirectBtnText:{
+    color:'#4D869C',
   }
 });
 
