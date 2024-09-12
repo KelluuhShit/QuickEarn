@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Image, Text, ActivityIndicator,TouchableOpacity } from 'react-native';
 import codingImg from '../assets/assesWelcome/codingImg.png';
 import { useAuth } from '../context/AuthContext';
+import { Ionicons } from '@expo/vector-icons';
 
 const CodeWelcome = () => {
     const { username } = useAuth();
@@ -11,7 +12,7 @@ const CodeWelcome = () => {
         <View style={styles.welcomePage}>
             {isLoading && (
                 <View style={styles.loaderContainer}>
-                    <ActivityIndicator size="large" color="#4D869C" />
+                    <ActivityIndicator size="large" color="#6c757d" />
                 </View>
             )}
 
@@ -23,10 +24,10 @@ const CodeWelcome = () => {
             
             {!isLoading && (
                 <>
-                    <Text style={styles.greeting}>Welcome, {username}!</Text>
+                    <Text style={styles.greeting}>Participant: {username}</Text>
                     <Text style={styles.infoText}>
                         You're about to start the Coding and Programming assessment.
-                        Please complete it within 30 minutes. 
+                        Please complete it within 30 minutes.
                         Upon completion, you'll receive a certificate confirming your eligibility 
                         to undertake tasks.
                     </Text>
@@ -37,6 +38,13 @@ const CodeWelcome = () => {
                 <TouchableOpacity style={styles.startBtn}>
                 <Text style={styles.startText}>Start</Text>
                 </TouchableOpacity>
+            )}
+
+            {!isLoading && (
+                <View style={styles.powerTittle}>
+                <Text style={styles.powerTittleText}>powered by summit tests</Text>
+                <Ionicons name="shield-checkmark-outline" size={11} color="#6c757d" />
+                </View>
             )}
         </View>
     );
@@ -64,23 +72,33 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginVertical: 10,
-        color: '#4D869C',
+        color: '#6c757d',
     },
     infoText: {
         fontSize: 15,
         marginHorizontal: 20,
-        color: '#7AB2B2',
+        color: '#6c757d',
     },
     startBtn:{
         borderWidth:2,
-        borderColor:'#7AB2B2',
+        borderColor:'#6c757d',
         paddingVertical:10,
         paddingHorizontal:100,
         borderRadius:50,
     },
     startText:{
-        color:"#7AB2B2",
+        color:"#6c757d",
     },
+    powerTittle:{
+        flexDirection:'row',
+        justifyContent:'center',
+        alignItems:'center',
+        gap:5,
+    },
+    powerTittleText:{
+        fontSize:11,
+        color:"#6c757d",
+    }
 });
 
 export default CodeWelcome;

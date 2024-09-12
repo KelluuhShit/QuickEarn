@@ -8,6 +8,7 @@ import NutritionWelcome from '../welcomeScreens/nutritionWelcome';
 import CookingWelcome from '../welcomeScreens/cookingWelcome';
 import SocialWelcome from '../welcomeScreens/socialWelcome';
 
+
 import { useAssessment } from '../context/AssessmentContext';
 import { useNavigation } from '@react-navigation/native';
 
@@ -15,10 +16,19 @@ const LearnScreen = () => {
 
   const [questionsModal, setQuestionsModal] = useState(false);
   const [selectedAssessment, setSelectedAssessment] = useState(null);
+  const [assessmentFailed, setAssessmentFailed] = useState(false);
+
+  
 
   const startTest = (assessment) => {
     setSelectedAssessment(assessment); // Set the selected assessment
     setQuestionsModal(true);           // Open the modal
+    setAssessmentFailed(false);        // Reset failure state if starting again
+  };
+
+  const handleModalClose = (failed) => {
+    setQuestionsModal(false);  // Close the modal
+    setAssessmentFailed(failed); // Update failure state based on the result
   };
 
   const { setIsAssessed } = useAssessment(); // Get the setter for assessment
@@ -32,15 +42,15 @@ const LearnScreen = () => {
   const renderSelectedAssessment = () => {
     switch (selectedAssessment) {
       case 'project':
-        return <ProjectWelcome />;
+        return <ProjectWelcome closeModal={() => handleModalClose(true)} />;
       case 'coding':
-        return <CodeWelcome />;
+        return <CodeWelcome closeModal={() => handleModalClose(true)} />;
       case 'nutrition':
-        return <NutritionWelcome />;
+        return <NutritionWelcome closeModal={() => handleModalClose(true)} />;
       case 'cooking':
-        return <CookingWelcome />;
+        return <CookingWelcome closeModal={() => handleModalClose(true)} />;
       case 'social':
-        return <SocialWelcome />;
+        return <SocialWelcome closeModal={() => handleModalClose(true)} />;
       default:
         return null;
     }
@@ -88,11 +98,20 @@ const LearnScreen = () => {
                 <Text style={styles.startText}>Remote - Test</Text>
               </View>
               <TouchableOpacity
-                style={styles.testButton}
-                onPress={() => startTest('project')}
+                style={[
+                  styles.testButton,
+                  assessmentFailed && { backgroundColor: '#C96868' } // Change background to red if failed
+                ]}
+                onPress={assessmentFailed ? null : () => startTest('project')} // Disable onPress if failed
+                disabled={assessmentFailed} // Disable the button if failed
               >
-                <Ionicons name="play-circle-outline" size={15} color="#6c757d" />
-                <Text style={styles.startText}>Start</Text>
+                <Ionicons name={assessmentFailed ? 'close-circle-outline' : 'play-circle-outline'} size={15} color={assessmentFailed ? 'white' : '#6c757d'} />
+                <Text style={[
+                  styles.startText,
+                  assessmentFailed && { color: 'white' } // Change text to white if failed
+                ]}>
+                  {assessmentFailed ? 'Failed' : 'Start'}
+                </Text>
               </TouchableOpacity>
             </View>
 
@@ -159,18 +178,19 @@ const LearnScreen = () => {
         </View>
 
           <Modal
-          transparent={true}
-          animationType="slide"
-          visible={questionsModal}
-          onRequestClose={() => setQuestionsModal(false)}
-          >
-          <View style={styles.questionsView}>
-        <View style={styles.modalContent}>
-            {renderSelectedAssessment()}
-        </View>
-    </View>
-
+            transparent={true}
+            animationType="slide"
+            visible={questionsModal}
+            onRequestClose={() => setQuestionsModal(false)}
+            >
+            <View style={styles.questionsView}>
+            <View style={styles.modalContent}>
+                {renderSelectedAssessment()}
+            </View>
+            </View>
           </Modal>
+
+          
       </View>
     </ScrollView>
   );
@@ -290,6 +310,7 @@ modalContent: {
     justifyContent:'center',
     
 },
+
 });
 
 export default LearnScreen;
