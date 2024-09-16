@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import ProjectManagementQuestions from '../assesments/projectManagementQuestions';
 import ProgressBar from 'react-native-progress/Bar';
+import CertificatePage from '../certification/cerificate';
 
 const ProjectWelcome = ({ closeModal }) => {
     const { username } = useAuth();
@@ -82,7 +83,6 @@ const ProjectWelcome = ({ closeModal }) => {
     useEffect(() => {
         if (quizCompleted) {
             const performanceLevel = getPerformanceLevel().toLowerCase();
-            console.log('Performance Level:', performanceLevel); // Debugging line
             setSelectedOption(performanceLevel);
         }
     }, [quizCompleted, score]);
@@ -243,6 +243,12 @@ const ProjectWelcome = ({ closeModal }) => {
                                         <Text>Below Average - $3</Text>
                                     </TouchableOpacity>
                                 </View>
+
+                                {/*certification Page */}
+
+                                <View>
+                                    <CertificatePage/>
+                                </View>
                         </View>
 
                     )}
@@ -379,11 +385,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        width: '100%',
         paddingHorizontal: 20,
-        backgroundColor:'#f0f0f0',
-        paddingVertical:10,
-        borderRadius:2,
+        backgroundColor: '#f0f0f0',
+        paddingVertical: 10,
+        borderRadius: 2,
+        position: 'absolute', // Position the container absolutely
+        top: 10, // Align it to the top
+        left: 10, // Make sure it stretches across the screen
+        right: 10, // Ensure full width
+        zIndex: 1, // Place it above other content
     },
     iconContainer: {
         flexDirection: 'row',

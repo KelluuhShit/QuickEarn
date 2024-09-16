@@ -6,6 +6,8 @@ import MainTabNavigator from './navigation/MainTabNavigator';
 import { AssessmentProvider } from './context/AssessmentContext';
 import * as Font from 'expo-font';
 import Toast from 'react-native-toast-message';
+import { registerRootComponent } from 'expo';
+
 
 // Function to load custom fonts
 const loadFonts = async () => {
@@ -37,7 +39,7 @@ const App = () => {
 };
 
 // Wrapping the app with both AuthProvider and AssessmentProvider
-export default function AppWrapper() {
+const AppWrapper = () => {
   return (
     <AuthProvider>
       <AssessmentProvider>
@@ -45,4 +47,8 @@ export default function AppWrapper() {
       </AssessmentProvider>
     </AuthProvider>
   );
-}
+};
+
+registerRootComponent(AppWrapper);
+
+export default AppWrapper;
