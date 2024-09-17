@@ -5,7 +5,8 @@ import { useAuth } from '../context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import ProjectManagementQuestions from '../assesments/projectManagementQuestions';
 import ProgressBar from 'react-native-progress/Bar';
-import CertificatePage from '../certification/cerificate';
+import verifiedImg from '../assets/certificate/verified.png'
+import Loader from '../certification/loader';
 
 const ProjectWelcome = ({ closeModal }) => {
     const { username } = useAuth();
@@ -220,7 +221,7 @@ const ProjectWelcome = ({ closeModal }) => {
                                         <View style={styles.radioCircle}>
                                             {selectedOption === 'excellent' && <View style={styles.selectedRb} />}
                                         </View>
-                                        <Text>Excellent - $1</Text>
+                                        <Text>Excellent - $5</Text>
                                     </TouchableOpacity>
 
                                     <TouchableOpacity
@@ -230,7 +231,7 @@ const ProjectWelcome = ({ closeModal }) => {
                                         <View style={styles.radioCircle}>
                                             {selectedOption === 'average' && <View style={styles.selectedRb} />}
                                         </View>
-                                        <Text>Average - $2</Text>
+                                        <Text>Average - $10</Text>
                                     </TouchableOpacity>
 
                                     <TouchableOpacity
@@ -240,15 +241,18 @@ const ProjectWelcome = ({ closeModal }) => {
                                         <View style={styles.radioCircle}>
                                             {selectedOption === 'belowaverage' && <View style={styles.selectedRb} />}
                                         </View>
-                                        <Text>Below Average - $3</Text>
+                                        <Text>Below Average - $15</Text>
                                     </TouchableOpacity>
                                 </View>
+                                <View style={styles.verifyCont}>
+                                    <Loader />
+                                    <Text style={styles.verifyText}>Click button to verify</Text>
 
-                                {/*certification Page */}
-
-                                <View>
-                                    <CertificatePage/>
                                 </View>
+
+                                <TouchableOpacity style={styles.verifyBtn}>
+                                    <Text>Verify Assessment</Text>
+                                </TouchableOpacity>
                         </View>
 
                     )}
@@ -362,10 +366,11 @@ const styles = StyleSheet.create({
         backgroundColor:'#f0f0f0'
     },
     resultText: {
-        fontSize: 20,
+        fontSize: 18,
         marginBottom: 20,
         color: '#6c757d',
         textAlign:'center',
+        fontWeight:'bold',
     },
     progressBarWrapper: {
         width: '100%', // Adjust the width as needed
@@ -451,6 +456,28 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         backgroundColor: '#444',
     },
+    verifyCont:{
+        justifyContent:'center',
+        alignItems:'center',
+        marginTop:50,
+    },
+    verifiedImg:{
+        width:150,
+        height:150,
+    },
+    verifyText:{
+        marginTop:10,
+        fontSize:14,
+    },
+    verifyBtn:{
+        justifyContent:'center',
+        alignItems:'center',
+        marginTop:50,
+        borderWidth:2,
+        borderRadius:50,
+        paddingVertical:15,
+        margin:20,
+    }
 });
 
 export default ProjectWelcome;
